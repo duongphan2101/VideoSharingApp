@@ -4,7 +4,7 @@ import { View,StyleSheet, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/EvilIcons.js';
 import HomeScreen from './screen/home.js';
 import SearchScreen from './screen/home.js';
 import FriendsScreen from './screen/home.js';
@@ -17,37 +17,37 @@ function TabNavigator() {
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name="VideoSharingApp"
+        name="Home"
         component={HomeScreen}
         options={{
           header: () => (
             <View style={styles.headerContainer}>
               <Text style={styles.headerTitle}>Video Sharing App</Text>
-              <Icon name="bell" size={20} color="black" />
+              <Icon name="bell" size={30} color="black" />
             </View>
           ),
-          tabBarIcon: ({ color }) => <Icon name="film" size={20} color={color} />,
+          tabBarIcon: ({ color }) => <Icon name="archive" size={30} color={color} />,
         }}
       />
       <Tab.Screen
         name="Search"
         component={SearchScreen}
         options={{
-          tabBarIcon: ({ color }) => <Icon name="check" size={20} color={color} />,
+          tabBarIcon: ({ color }) => <Icon name="search" size={30} color={color} />,
         }}
       />
       <Tab.Screen
         name="Friends"
         component={FriendsScreen}
         options={{
-          tabBarIcon: ({ color }) => <Icon name="list" size={20} color={color} />,
+          tabBarIcon: ({ color }) => <Icon name="share-google" size={30} color={color} />,
         }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color }) => <Icon name="user" size={20} color={color} />,
+          tabBarIcon: ({ color }) => <Icon name="user" size={30} color={color} />,
         }}
       />
     </Tab.Navigator>
