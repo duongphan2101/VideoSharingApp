@@ -62,7 +62,7 @@ const dataAudio = [
 ];
 
 
-export default function App({ navigate }) {
+export default function App({ navigation }) {
     
   // Hàm renderItem cho phần Stories
   const renderItem1 = ({ item }) => (
@@ -113,8 +113,8 @@ export default function App({ navigate }) {
     <SafeAreaView style={{ marginTop: 15,marginBottom: 20 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Top trending</Text>
-        <TouchableOpacity>
-          <Image source={require('../assets/Home_Video_Listing/Button1.png')} />
+        <TouchableOpacity onPress={()=>navigation.navigate('VideoStreaming')}>
+          <Image source={require('../assets/Home_Video_Listing/Button1.png')}/>
         </TouchableOpacity>
       </View>
 
