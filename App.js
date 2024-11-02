@@ -9,7 +9,7 @@ import Icon3 from 'react-native-vector-icons/Entypo.js';
 import HomeScreen from './screen/home.js';
 import SearchScreen from './screen/home.js';
 import FriendsScreen from './screen/home.js';
-import ProfileScreen from './screen/home.js';
+import ProfileScreen from './screen/profile.js';
 import videoStreaming from './screen/videoStreaming.js';
 
 const Stack = createStackNavigator();
@@ -59,6 +59,7 @@ function TabNavigator() {
         name="Profile"
         component={ProfileScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({ color }) => <Icon2 name="user-circle-o" size={30} color={color} />,
         }}
       />

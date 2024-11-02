@@ -1,0 +1,170 @@
+import { Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
+import Icon2 from 'react-native-vector-icons/FontAwesome';
+import { TabView, SceneMap } from 'react-native-tab-view';
+import { useState } from 'react';
+
+const MyVideos = () => {
+    <View style={[styles.scene, { backgroundColor: 'pink' }]}>
+        <Text>My Videos</Text>
+    </View>
+};
+
+const MyImages = () => {
+    <View style={[styles.scene, { backgroundColor: 'blue' }]}>
+        <Text>My Images</Text>
+    </View>
+};
+
+const MyLiked = () => {
+    <View style={[styles.scene, { backgroundColor: 'green' }]}>
+        <Text>Liked</Text>
+    </View>
+};
+
+const dataVideos = [
+    { id: '1', image: require('../assets/MyProfile/Container72.png')},
+    { id: '2', image: require('../assets/MyProfile/Container73.png')},
+    { id: '3', image: require('../assets/MyProfile/Container74.png')},
+    { id: '4', image: require('../assets/MyProfile/Container75.png')},
+    { id: '5', image: require('../assets/MyProfile/Container76.png')},
+    { id: '6', image: require('../assets/MyProfile/Container77.png')},
+    { id: '7', image: require('../assets/MyProfile/Container78.png')},
+    { id: '8', image: require('../assets/MyProfile/Container79.png')},
+    { id: '9', image: require('../assets/MyProfile/Container80.png')},
+  ];
+
+const width = { width: Dimensions.get('window').width };
+
+const MyVideosTabView = () => {
+    const [index, setIndex] = useState(0);
+    const [routes] = useState([
+        { key: 'videos', title: 'Videos' },
+        { key: 'images', title: 'Images' },
+        { key: 'liked', title: 'Liked' },
+    ]);
+
+    const renderScene = SceneMap({
+        videos: MyVideos,
+        images: MyImages,
+        liked: MyLiked,
+    });
+
+    return (
+        <TabView
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            initialLayout={width}
+        />
+    );
+};
+
+export default function App({ navigation }) {
+    return (
+        <ScrollView style={styles.container}>
+            <View style={styles.headerContainer}>
+                <View style={{ flexDirection: 'row' }}>
+                    <Icon2 style={{ paddingHorizontal: 10 }} name="navicon" size={20} color="black" />
+                    <Icon2 style={{ paddingHorizontal: 10 }} name="user-plus" size={20} color="black" />
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon2 style={{ color: 'pink', paddingHorizontal: 5 }} name="pencil" size={20} />
+                    <Text style={{ color: 'pink', paddingHorizontal: 5 }}>Edit Profile</Text>
+                </View>
+            </View>
+
+            <View style={styles.imgLogo}>
+                <Image style={{ height: 150, width: 150 }} source={require('../assets/MyProfile/Container71.png')} />
+                <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Ruth Sanders</Text>
+                <View style={{ flexDirection: 'row', marginTop: 20 }}>
+                    <TouchableOpacity style={styles.fl}>
+                        <Text>203</Text>
+                        <Text style={styles.textgrey}>Following</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.fl}>
+                        <Text>628</Text>
+                        <Text style={styles.textgrey}>Followers</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.fl}>
+                        <Text>6031</Text>
+                        <Text style={styles.textgrey}>Like</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={{flex: 1}}>
+                    {/* <MyVideosTabView /> */}
+                    <View style={styles.tabViewContainer}>
+                        <TouchableOpacity style = {styles.touchTabView}>
+                            <Icon2 style={{ color: 'pink', paddingHorizontal: 10 }} name="play" size={20} />
+                            <Text style={{fontSize: 18, color: 'pink'}}>My Videos</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style = {styles.touchTabView}>
+                            <Icon2 style={{paddingHorizontal: 10 }} name="image" size={20} />
+                            <Text style={{fontSize: 18}}>My Images</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style = {styles.touchTabView}>
+                            <Icon2 style={{paddingHorizontal: 10 }} name="heart-o" size={20} />
+                            <Text style={{fontSize: 18}}>Liked</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {/* grid video */}
+                    <FlatList
+                        data={dataVideos}
+                        renderItem={({item}) => (
+                            <TouchableOpacity style={styles.videoItem}>
+                                <Image source={item.image}/>
+                            </TouchableOpacity>
+                        )}
+                        keyExtractor={item => item.id}
+                        numColumns={3}
+                        contentContainerStyle={{alignItems: 'center', marginTop: 10}}
+                    />
+                </View>
+            </View>
+        </ScrollView>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        paddingTop: 70,
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        alignItems: 'center',
+    },
+    imgLogo: {
+        alignItems: 'center',
+        marginTop: 30,
+    },
+    fl: {
+        paddingHorizontal: 15,
+        alignItems: 'center',
+    },
+    textgrey: {
+        color: 'grey',
+    },
+    scene: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    }, tabViewContainer: {
+        flexDirection: 'row',
+        marginTop: 20,
+        width: '100%'
+    }, touchTabView : {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 10
+    }, videoItem : {
+        width: width / 3,
+        padding: 10
+    }
+});
