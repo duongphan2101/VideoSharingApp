@@ -11,6 +11,8 @@ import SearchScreen from './screen/home.js';
 import FriendsScreen from './screen/home.js';
 import ProfileScreen from './screen/profile.js';
 import videoStreaming from './screen/videoStreaming.js';
+import Following from './screen/following.js';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -78,6 +80,10 @@ export default function App() {
         <Stack.Screen 
             name='VideoStreaming' 
             component={videoStreaming}
+        />
+        <Stack.Screen 
+            name='Following' 
+            component={Following}
         />
       </Stack.Navigator>
     </NavigationContainer>

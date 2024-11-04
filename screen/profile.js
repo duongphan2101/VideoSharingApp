@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import { useState } from 'react';
+import Following from './following';
 
 const MyVideos = () => {
     <View style={[styles.scene, { backgroundColor: 'pink' }]}>
@@ -34,7 +35,7 @@ const dataVideos = [
     { id: '9', image: require('../assets/MyProfile/Container80.png')},
   ];
 
-const width = { width: Dimensions.get('window').width };
+const widthScreen = Dimensions.get('window').width;
 
 const MyVideosTabView = () => {
     const [index, setIndex] = useState(0);
@@ -62,7 +63,7 @@ const MyVideosTabView = () => {
 
 export default function App({ navigation }) {
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={[styles.container]}>
             <View style={styles.headerContainer}>
                 <View style={{ flexDirection: 'row' }}>
                     <Icon2 style={{ paddingHorizontal: 10 }} name="navicon" size={20} color="black" />
@@ -78,12 +79,12 @@ export default function App({ navigation }) {
                 <Image style={{ height: 150, width: 150 }} source={require('../assets/MyProfile/Container71.png')} />
                 <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Ruth Sanders</Text>
                 <View style={{ flexDirection: 'row', marginTop: 20 }}>
-                    <TouchableOpacity style={styles.fl}>
+                    <TouchableOpacity style={styles.fl} onPress={()=>navigation.navigate('Following')}>
                         <Text>203</Text>
                         <Text style={styles.textgrey}>Following</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.fl}>
+                    <TouchableOpacity style={styles.fl} onPress={()=>navigation.navigate('Following')}>
                         <Text>628</Text>
                         <Text style={styles.textgrey}>Followers</Text>
                     </TouchableOpacity>
@@ -99,20 +100,21 @@ export default function App({ navigation }) {
                     <View style={styles.tabViewContainer}>
                         <TouchableOpacity style = {styles.touchTabView}>
                             <Icon2 style={{ color: 'pink', paddingHorizontal: 10 }} name="play" size={20} />
-                            <Text style={{fontSize: 18, color: 'pink'}}>My Videos</Text>
+                            <Text style={{fontSize: 16, color: 'pink'}}>My Videos</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style = {styles.touchTabView}>
                             <Icon2 style={{paddingHorizontal: 10 }} name="image" size={20} />
-                            <Text style={{fontSize: 18}}>My Images</Text>
+                            <Text style={{fontSize: 16}}>My Images</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style = {styles.touchTabView}>
                             <Icon2 style={{paddingHorizontal: 10 }} name="heart-o" size={20} />
-                            <Text style={{fontSize: 18}}>Liked</Text>
+                            <Text style={{fontSize: 16}}>Liked</Text>
                         </TouchableOpacity>
                     </View>
                     {/* grid video */}
                     <FlatList
                         data={dataVideos}
+                        showsVerticalScrollIndicator={false}
                         renderItem={({item}) => (
                             <TouchableOpacity style={styles.videoItem}>
                                 <Image source={item.image}/>
@@ -120,10 +122,11 @@ export default function App({ navigation }) {
                         )}
                         keyExtractor={item => item.id}
                         numColumns={3}
-                        contentContainerStyle={{alignItems: 'center', marginTop: 10}}
+                        contentContainerStyle={{alignItems: 'center', marginTop: 10, flex: 1}}
                     />
                 </View>
             </View>
+
         </ScrollView>
     );
 }
@@ -158,13 +161,17 @@ const styles = StyleSheet.create({
     }, tabViewContainer: {
         flexDirection: 'row',
         marginTop: 20,
-        width: '100%'
+        width: '100%',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10
     }, touchTabView : {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 10
     }, videoItem : {
-        width: width / 3,
+        width: widthScreen / 3,
         padding: 10
+    }, scene : {
+        flex: 1
     }
 });
