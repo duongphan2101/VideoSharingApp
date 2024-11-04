@@ -7,11 +7,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon2 from 'react-native-vector-icons/FontAwesome.js';
 import Icon3 from 'react-native-vector-icons/Entypo.js';
 import HomeScreen from './screen/home.js';
-import SearchScreen from './screen/home.js';
+import SearchScreen from './screen/searchSreen.js';
 import FriendsScreen from './screen/home.js';
 import ProfileScreen from './screen/profile.js';
 import videoStreaming from './screen/videoStreaming.js';
 import Following from './screen/following.js';
+import { TouchableOpacity } from 'react-native';
 
 
 const Stack = createStackNavigator();
@@ -40,6 +41,7 @@ function TabNavigator() {
         name="Search"
         component={SearchScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({ color }) => <Icon2 name="search" size={30} color={color} />,
         }}
       />
@@ -47,6 +49,7 @@ function TabNavigator() {
         name="Plus"
         component={SearchScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({ color }) => <Icon3 name="circle-with-plus" size={35} color={color} />,
         }}
       />
@@ -54,6 +57,7 @@ function TabNavigator() {
         name="Friends"
         component={FriendsScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({ color }) => <Icon2 name="users" size={25} color={color} />,
         }}
       />
@@ -61,7 +65,18 @@ function TabNavigator() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          headerShown: false,
+          header: () => (
+            <View style={styles.headerProflieContainer}>
+                <View style={{ flexDirection: 'row' }}>
+                    <Icon2 style={{ paddingHorizontal: 10 }} name="navicon" size={20} color="black" />
+                    <Icon2 style={{ paddingHorizontal: 10 }} name="user-plus" size={20} color="black" />
+                </View>
+                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon2 style={{ color: 'pink', paddingHorizontal: 5 }} name="pencil" size={20} />
+                    <Text style={{ color: 'pink', paddingHorizontal: 5 }}>Edit Profile</Text>
+                </TouchableOpacity>
+            </View>
+          ),
           tabBarIcon: ({ color }) => <Icon2 name="user-circle-o" size={30} color={color} />,
         }}
       />
@@ -105,5 +120,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-  },
+  }, headerProflieContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    paddingTop: 40,
+    backgroundColor: 'white',
+}
 })

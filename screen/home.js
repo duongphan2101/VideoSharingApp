@@ -1,7 +1,6 @@
 import { TouchableOpacity } from 'react-native';
 import { SafeAreaView, StyleSheet, Text, View, Image, ScrollView, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
 const dataTopTrending = [
   { id: '1', image: require('../assets/Home_Video_Listing/Container3.png'), marginLeft: -10 },
   { id: '2', image: require('../assets/Home_Video_Listing/Container15.png'), marginLeft: 0 },
@@ -74,7 +73,7 @@ export default function App({ navigation }) {
 
   // Hàm renderItem
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={[styles.padTouch, { marginLeft: item.marginLeft }]}>
+    <TouchableOpacity style={[styles.padTouch, { marginLeft: item.marginLeft }]} onPress={()=>navigation.navigate('VideoStreaming')}>
       <Image source={item.image} />
     </TouchableOpacity>
   );

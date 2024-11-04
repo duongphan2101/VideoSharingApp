@@ -1,26 +1,59 @@
 import { Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
-import { TabView, SceneMap } from 'react-native-tab-view';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useState } from 'react';
 import Following from './following';
 
 const MyVideos = () => {
-    <View style={[styles.scene, { backgroundColor: 'pink' }]}>
-        <Text>My Videos</Text>
-    </View>
+    return(
+        <FlatList
+            data={dataVideos}
+            showsVerticalScrollIndicator={false}
+            renderItem={({item}) => (
+                <TouchableOpacity style={styles.videoItem}>
+                    <Image source={item.image}/>
+                </TouchableOpacity>
+            )}
+            keyExtractor={item => item.id}
+            numColumns={3}
+            contentContainerStyle={{alignItems: 'center', marginTop: 10}}
+        />
+    );
 };
 
 const MyImages = () => {
-    <View style={[styles.scene, { backgroundColor: 'blue' }]}>
-        <Text>My Images</Text>
-    </View>
+    return(
+        <FlatList
+            data={dataVideos}
+            showsVerticalScrollIndicator={false}
+            renderItem={({item}) => (
+                <TouchableOpacity style={styles.videoItem}>
+                    <Image source={item.image}/>
+                </TouchableOpacity>
+            )}
+            keyExtractor={item => item.id}
+            numColumns={3}
+            contentContainerStyle={{alignItems: 'center', marginTop: 10}}
+        />
+    );
 };
 
 const MyLiked = () => {
-    <View style={[styles.scene, { backgroundColor: 'green' }]}>
-        <Text>Liked</Text>
-    </View>
+    return(
+        <FlatList
+            data={dataVideos}
+            showsVerticalScrollIndicator={false}
+            renderItem={({item}) => (
+                <TouchableOpacity style={styles.videoItem}>
+                    <Image source={item.image}/>
+                </TouchableOpacity>
+            )}
+            keyExtractor={item => item.id}
+            numColumns={3}
+            contentContainerStyle={{alignItems: 'center', marginTop: 10}}
+        />
+    );
 };
 
 const dataVideos = [
@@ -40,8 +73,8 @@ const widthScreen = Dimensions.get('window').width;
 const MyVideosTabView = () => {
     const [index, setIndex] = useState(0);
     const [routes] = useState([
-        { key: 'videos', title: 'Videos' },
-        { key: 'images', title: 'Images' },
+        { key: 'videos', title: 'My Videos' },
+        { key: 'images', title: 'My Images' },
         { key: 'liked', title: 'Liked' },
     ]);
 
@@ -51,30 +84,33 @@ const MyVideosTabView = () => {
         liked: MyLiked,
     });
 
+    const renderTabBar = props => (
+        <TabBar
+            {...props}
+            indicatorStyle={styles.indicator}
+            style={styles.tabBar}
+            renderLabel={({ route, focused }) => (
+                <Text style={[styles.tabLabel, focused ? styles.activeTabLabel : styles.inactiveTabLabel]}>
+                    {route.title}
+                </Text>
+            )}
+        />
+    );
+
     return (
         <TabView
             navigationState={{ index, routes }}
             renderScene={renderScene}
+            renderTabBar={renderTabBar}
             onIndexChange={setIndex}
-            initialLayout={width}
+            initialLayout={{width: widthScreen}}
         />
     );
 };
 
 export default function App({ navigation }) {
     return (
-        <ScrollView style={[styles.container]}>
-            <View style={styles.headerContainer}>
-                <View style={{ flexDirection: 'row' }}>
-                    <Icon2 style={{ paddingHorizontal: 10 }} name="navicon" size={20} color="black" />
-                    <Icon2 style={{ paddingHorizontal: 10 }} name="user-plus" size={20} color="black" />
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon2 style={{ color: 'pink', paddingHorizontal: 5 }} name="pencil" size={20} />
-                    <Text style={{ color: 'pink', paddingHorizontal: 5 }}>Edit Profile</Text>
-                </View>
-            </View>
-
+        <View style={[styles.container]}>
             <View style={styles.imgLogo}>
                 <Image style={{ height: 150, width: 150 }} source={require('../assets/MyProfile/Container71.png')} />
                 <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Ruth Sanders</Text>
@@ -94,40 +130,11 @@ export default function App({ navigation }) {
                         <Text style={styles.textgrey}>Like</Text>
                     </TouchableOpacity>
                 </View>
-
-                <View style={{flex: 1}}>
-                    {/* <MyVideosTabView /> */}
-                    <View style={styles.tabViewContainer}>
-                        <TouchableOpacity style = {styles.touchTabView}>
-                            <Icon2 style={{ color: 'pink', paddingHorizontal: 10 }} name="play" size={20} />
-                            <Text style={{fontSize: 16, color: 'pink'}}>My Videos</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style = {styles.touchTabView}>
-                            <Icon2 style={{paddingHorizontal: 10 }} name="image" size={20} />
-                            <Text style={{fontSize: 16}}>My Images</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style = {styles.touchTabView}>
-                            <Icon2 style={{paddingHorizontal: 10 }} name="heart-o" size={20} />
-                            <Text style={{fontSize: 16}}>Liked</Text>
-                        </TouchableOpacity>
-                    </View>
-                    {/* grid video */}
-                    <FlatList
-                        data={dataVideos}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({item}) => (
-                            <TouchableOpacity style={styles.videoItem}>
-                                <Image source={item.image}/>
-                            </TouchableOpacity>
-                        )}
-                        keyExtractor={item => item.id}
-                        numColumns={3}
-                        contentContainerStyle={{alignItems: 'center', marginTop: 10, flex: 1}}
-                    />
-                </View>
+                    
             </View>
+            <MyVideosTabView/>
 
-        </ScrollView>
+        </View>
     );
 }
 
@@ -135,26 +142,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        paddingTop: 70,
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 10,
-        alignItems: 'center',
-    },
-    imgLogo: {
+    }, imgLogo: {
         alignItems: 'center',
         marginTop: 30,
-    },
-    fl: {
+        paddingBottom: 20
+    }, fl: {
         paddingHorizontal: 15,
         alignItems: 'center',
-    },
-    textgrey: {
+    }, textgrey: {
         color: 'grey',
-    },
-    scene: {
+    }, scene: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -170,8 +167,24 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10
     }, videoItem : {
         width: widthScreen / 3,
-        padding: 10
-    }, scene : {
+        padding: 15
+    }, scene: {
         flex: 1
+    }, tabBar: {
+        backgroundColor: 'white',
+        elevation: 0,
+        shadowOpacity: 0,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0'
+    }, indicator: {
+        backgroundColor: 'pink',
+        height: 2,
+    }, tabLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    }, activeTabLabel: {
+        color: 'pink',
+    }, inactiveTabLabel: {
+        color: 'black',
     }
 });

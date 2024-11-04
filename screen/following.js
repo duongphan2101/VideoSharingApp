@@ -108,8 +108,8 @@ export default function App({ navigation }) {
                     <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Ruth Sanders</Text>
                 </View>
                 <View style={styles.leftHead}>
-                    <Icon2 style={{ paddingHorizontal: 5 }} name='search' size={20} color='black'/>
-                    <Icon2 style={{ paddingHorizontal: 5 }} name='bars' size={20} color='black'/>
+                    <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='search' size={20} color='black'/></TouchableOpacity>
+                    <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='bars' size={20} color='black'/></TouchableOpacity>
                 </View>
             </View>
             <MyVideosTabView/>
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        paddingTop: 70
+        paddingTop: 50
     },
     head: {
         paddingHorizontal: 10,
