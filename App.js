@@ -8,9 +8,11 @@ import Icon2 from 'react-native-vector-icons/FontAwesome.js';
 import Icon3 from 'react-native-vector-icons/Entypo.js';
 import HomeScreen from './screen/home.js';
 import SearchScreen from './screen/searchSreen.js';
-import FriendsScreen from './screen/home.js';
+import FriendsScreen from './screen/friends.js';
 import ProfileScreen from './screen/profile.js';
 import videoStreaming from './screen/videoStreaming.js';
+import post from './screen/Post_Video_Screen.js';
+import plus from './screen/Create_Video.js';
 import Following from './screen/following.js';
 import profileDetails from './screen/profiledetails.js';
 import { TouchableOpacity } from 'react-native';
@@ -48,7 +50,7 @@ function TabNavigator() {
       />
       <Tab.Screen
         name="Plus"
-        component={SearchScreen}
+        component={plus}
         options={{
           headerShown: false,
           tabBarIcon: ({ color }) => <Icon3 name="circle-with-plus" size={35} color={color} />,
@@ -104,6 +106,10 @@ export default function App() {
         <Stack.Screen 
             name='ProfileDetails' 
             component={profileDetails}
+        />
+        <Stack.Screen 
+            name='Post' 
+            component={post}
         />
       </Stack.Navigator>
     </NavigationContainer>
