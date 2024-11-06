@@ -181,7 +181,6 @@ const styles = StyleSheet.create({
         height: 2,
     }, tabLabel: {
         fontSize: 16,
-        fontWeight: 'bold',
     }, activeTabLabel: {
         color: 'pink',
     }, inactiveTabLabel: {

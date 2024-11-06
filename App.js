@@ -12,6 +12,7 @@ import FriendsScreen from './screen/home.js';
 import ProfileScreen from './screen/profile.js';
 import videoStreaming from './screen/videoStreaming.js';
 import Following from './screen/following.js';
+import profileDetails from './screen/profiledetails.js';
 import { TouchableOpacity } from 'react-native';
 
 
@@ -99,6 +100,10 @@ export default function App() {
         <Stack.Screen 
             name='Following' 
             component={Following}
+        />
+        <Stack.Screen 
+            name='ProfileDetails' 
+            component={profileDetails}
         />
       </Stack.Navigator>
     </NavigationContainer>

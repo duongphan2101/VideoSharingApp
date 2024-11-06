@@ -1,15 +1,21 @@
-import { Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import { Alert, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useState } from 'react';
+import profileDetails from './profiledetails'
+import { useNavigation } from '@react-navigation/native';
 
 const MyVideos = () => {
+    const navigation = useNavigation();
+    const click = ({id}) => {
+        navigation.navigate('ProfileDetails', {userID: id});
+    }
     return (
         <FlatList
             data={dataFollowing}
             renderItem={({item}) => (
-                <TouchableOpacity style={styles.cardPeople}>
+                <TouchableOpacity style={styles.cardPeople} onPress={() => click({id: item.id})}>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
                         <Image source={item.image} style={{height: 50, width: 50}}/>
                         <Text style={{marginLeft: 10}}>{item.name}</Text>
@@ -26,11 +32,15 @@ const MyVideos = () => {
 };
 
 const MyImages = () => {
+    const navigation = useNavigation();
+    const click = ({id}) => {
+        navigation.navigate('ProfileDetails', {userID: id});
+    }
     return (
         <FlatList
             data={dataFollowing}
             renderItem={({item}) => (
-                <TouchableOpacity style={styles.cardPeople}>
+                <TouchableOpacity style={styles.cardPeople} onPress={() => click({id: item.id})}>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
                         <Image source={item.image} style={{height: 50, width: 50}}/>
                         <Text style={{marginLeft: 10}}>{item.name}</Text>
@@ -48,7 +58,7 @@ const MyImages = () => {
 
 const widthScreen = Dimensions.get('window').width;
 
-const MyVideosTabView = () => {
+const MyVideosTabView = ({navigation}) => {
     const [index, setIndex] = useState(0);
     const [routes] = useState([
         { key: 'videos', title: '368 followers' },
@@ -56,8 +66,8 @@ const MyVideosTabView = () => {
     ]);
 
     const renderScene = SceneMap({
-        videos: MyVideos,
-        images: MyImages,
+        videos: () => <MyVideos navigation={navigation} />,
+        images: () => <MyImages navigation={navigation} />,
     });
 
     const renderTabBar = props => (
@@ -94,8 +104,8 @@ const dataGoiY = [
     { id: '1', name : 'Kiran Glaucus', image: require('../assets/Follow/Avatar31.png')},
     { id: '2', name : 'Sally Rooney', image: require('../assets/Follow/Avatar32.png')},
     { id: '3', name : 'Marie Franco', image: require('../assets/Follow/Avatar36.png')},
-    { id: '2', name : 'Jena Nguyen', image: require('../assets/Follow/Avatar35.png')},
-    { id: '3', name : 'Kristin Watson', image: require('../assets/Follow/Avatar34.png')},
+    { id: '4', name : 'Jena Nguyen', image: require('../assets/Follow/Avatar35.png')},
+    { id: '5', name : 'Kristin Watson', image: require('../assets/Follow/Avatar34.png')},
   ];
 
 export default function App({ navigation }) {
