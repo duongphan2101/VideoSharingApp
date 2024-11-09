@@ -140,3 +140,33 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
 }
 })
+
+// import React, { useEffect, useState } from 'react';
+// import { View, Text } from 'react-native';
+// import axios from 'axios';
+
+// const App = () => {
+//   const [users, setUsers] = useState([]);
+
+//   useEffect(() => {
+//     axios.get('http://localhost:3000/users')
+//       .then(response => {
+//         setUsers(response.data);
+//       })
+//       .catch(error => {
+//         console.error('Error fetching users:', error);
+//       });
+//   }, []);
+
+//   return (
+//     <View>
+//       {users.map(user => (
+//         <Text key={user._id}>{user.username} - {user.email} - {user.age}</Text>
+//       ))}
+//     </View>
+//   );
+// };
+
+// export default App;
+
+
