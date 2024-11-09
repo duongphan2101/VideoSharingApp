@@ -11,6 +11,7 @@ import SearchScreen from './screen/searchSreen.js';
 import FriendsScreen from './screen/friends.js';
 import ProfileScreen from './screen/profile.js';
 import videoStreaming from './screen/videoStreaming.js';
+import login from './screen/Login.js'
 import post from './screen/Post_Video_Screen.js';
 import plus from './screen/Create_Video.js';
 import Following from './screen/following.js';
@@ -21,7 +22,8 @@ import { TouchableOpacity } from 'react-native';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function TabNavigator() {
+function TabNavigator({route}) {
+  const { userData } = route.params;
   return (
     <Tab.Navigator initialRouteName='Home' screenOptions={{
       tabBarActiveTintColor: 'pink',
@@ -30,6 +32,7 @@ function TabNavigator() {
       <Tab.Screen
         name="Home"
         component={HomeScreen}
+        initialParams={{ userData }}
         options={{
           header: () => (
             <View style={styles.headerContainer}>
@@ -42,6 +45,7 @@ function TabNavigator() {
       />
       <Tab.Screen
         name="Search"
+        initialParams={{ userData }}
         component={SearchScreen}
         options={{
           headerShown: false,
@@ -50,6 +54,7 @@ function TabNavigator() {
       />
       <Tab.Screen
         name="Plus"
+        initialParams={{ userData }}
         component={plus}
         options={{
           headerShown: false,
@@ -58,6 +63,7 @@ function TabNavigator() {
       />
       <Tab.Screen
         name="Friends"
+        initialParams={{ userData }}
         component={FriendsScreen}
         options={{
           headerShown: false,
@@ -66,6 +72,7 @@ function TabNavigator() {
       />
       <Tab.Screen
         name="Profile"
+        initialParams={{ userData }}
         component={ProfileScreen}
         options={{
           header: () => (
@@ -90,13 +97,17 @@ function TabNavigator() {
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='VideoSharingApp' screenOptions={{headerShown: false}}>
+      <Stack.Navigator initialRouteName='Login' screenOptions={{headerShown: false}}>
+        <Stack.Screen 
+            name='Login' 
+            component={login}
+          />
         <Stack.Screen 
             name='VideoSharingApp' 
             component={TabNavigator}
           />
         <Stack.Screen 
-            name='VideoStreaming' 
+            name='VideoStreaming'
             component={videoStreaming}
         />
         <Stack.Screen 
@@ -126,7 +137,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderBottomColor: 'grey',
     borderBottomWidth: .3,
-    paddingTop: 40
+    // paddingTop: 40
   },
   headerTitle: {
     fontSize: 18,
@@ -136,7 +147,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 10,
     alignItems: 'center',
-    paddingTop: 40,
+    // paddingTop: 40,
     backgroundColor: 'white',
 }
 })

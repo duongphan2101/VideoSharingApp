@@ -21,7 +21,7 @@ const post = [
   },
 ];
 
-export default function VideoStreaming({ navigation }) {
+export default function VideoStreaming({ navigation, route }) {
   const videoRefs = useRef([]);
   const [activePosId, setActivePostId] = useState(post[0].id);
   const { height } = useWindowDimensions();

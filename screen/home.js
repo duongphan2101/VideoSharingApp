@@ -7,14 +7,6 @@ const dataTopTrending = [
   { id: '3', image: require('../assets/Home_Video_Listing/Container16.png'), marginLeft: 0 },
 ];
 
-const dataStories = [
-  { id: '1', containerImage: require('../assets/Home_Video_Listing/Container13.png'), userImage: require('../assets/Home_Video_Listing/You.png') },
-  { id: '2', containerImage: require('../assets/Home_Video_Listing/Container17.png'), userImage: require('../assets/Home_Video_Listing/Adam.png') },
-  { id: '3', containerImage: require('../assets/Home_Video_Listing/Container20.png'), userImage: require('../assets/Home_Video_Listing/William.png') },
-  { id: '4', containerImage: require('../assets/Home_Video_Listing/Container23.png'), userImage: require('../assets/Home_Video_Listing/Peter.png') },
-  { id: '5', containerImage: require('../assets/Home_Video_Listing/Container26.png'), userImage: require('../assets/Home_Video_Listing/Julia.png') },
-  { id: '6', containerImage: require('../assets/Home_Video_Listing/Container29.png'), userImage: require('../assets/Home_Video_Listing/Rose.png') },
-];
 
 const dataStreaming = [
   { id: '1', image: require('../assets/Home_Video_Listing/Container11.png'), marginLeft: -10 },
@@ -61,12 +53,21 @@ const dataAudio = [
 ];
 
 
-export default function App({ navigation }) {
-    
+export default function App({ navigation, route }) {
+    const user  = route.params.userData;
+    console.log(user)
+    const dataStories = [
+      { id: '1', containerImage: {uri: user.avatar}, userImage: require('../assets/Home_Video_Listing/You.png') },
+      { id: '2', containerImage: require('../assets/Home_Video_Listing/Container17.png'), userImage: require('../assets/Home_Video_Listing/Adam.png') },
+      { id: '3', containerImage: require('../assets/Home_Video_Listing/Container20.png'), userImage: require('../assets/Home_Video_Listing/William.png') },
+      { id: '4', containerImage: require('../assets/Home_Video_Listing/Container23.png'), userImage: require('../assets/Home_Video_Listing/Peter.png') },
+      { id: '5', containerImage: require('../assets/Home_Video_Listing/Container26.png'), userImage: require('../assets/Home_Video_Listing/Julia.png') },
+      { id: '6', containerImage: require('../assets/Home_Video_Listing/Container29.png'), userImage: require('../assets/Home_Video_Listing/Rose.png') },
+    ];
   // Hàm renderItem cho phần Stories
   const renderItem1 = ({ item }) => (
     <TouchableOpacity style={styles.padTouch}>
-      <Image source={item.containerImage} />
+      <Image style={{height: 50, width: 50, borderRadius: 50}} source={item.containerImage} />
       <Image source={item.userImage} />
     </TouchableOpacity>
   );
