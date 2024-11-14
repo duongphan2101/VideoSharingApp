@@ -17,7 +17,7 @@ export default function App({ navigation}) {
     
     return (
         <View style={[styles.container]}>
-            <View style={styles.head}>
+            {/* <View style={styles.head}>
                 <View style={styles.leftHead}>
                     <Icon2 name='angle-left' size={30} color='black' onPress={() => navigation.goBack()}/>
                 </View>
@@ -25,7 +25,7 @@ export default function App({ navigation}) {
                     <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='bell-o' size={20} color='black'/></TouchableOpacity>
                     <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='bars' size={20} color='black'/></TouchableOpacity>
                 </View>
-            </View>
+            </View> */}
 
             <View style={styles.troppin}>
                 <Text style={{fontSize: 24, paddingVertical: 20, color: 'white'}}>
@@ -69,8 +69,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        paddingTop: 40,
-        paddingBottom: 20,
     }, imgLogo: {
         alignItems: 'center',
         marginTop: 30,
@@ -82,7 +80,8 @@ const styles = StyleSheet.create({
     }, head: {
         paddingHorizontal: 10,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        paddingVertical: 10
     },
     leftHead: {
         flexDirection: 'row',

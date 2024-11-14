@@ -9,30 +9,31 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@expo/metro-runtime": "~3.2.3",
+    "@expo/metro-runtime": "~4.0.0",
     "@react-navigation/bottom-tabs": "6.6.1",
     "@react-navigation/native": "6.1.18",
     "@react-navigation/native-stack": "6.11.0",
     "@react-navigation/stack": "6.4.1",
     "axios": "^1.7.7",
     "cors": "^2.8.5",
-    "expo": "~51.0.28",
-    "expo-av": "14.0.7",
-    "expo-status-bar": "~1.12.1",
+    "expo": "^52.0.0",
+    "expo-av": "~15.0.1",
+    "expo-status-bar": "~2.0.0",
     "express": "^4.21.1",
     "mongoose": "^8.8.0",
     "mssql": "^11.0.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-native": "0.74.5",
-    "react-native-pager-view": "^6.3.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.1",
+    "react-native-pager-view": "6.4.1",
     "react-native-tab-view": "3.5.2",
     "react-native-vector-icons": "10.2.0",
     "react-native-video": "^6.7.0",
-    "react-native-web": "~0.19.10"
+    "react-native-web": "~0.19.13",
+    "expo-video": "~2.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.25.2"
   },
   "private": true
 }

@@ -55,7 +55,6 @@ const dataAudio = [
 
 export default function App({ navigation, route }) {
     const user  = route.params.userData;
-    console.log(user)
     const dataStories = [
       { id: '1', containerImage: {uri: user.avatar}, userImage: require('../assets/Home_Video_Listing/You.png') },
       { id: '2', containerImage: require('../assets/Home_Video_Listing/Container17.png'), userImage: require('../assets/Home_Video_Listing/Adam.png') },
@@ -198,31 +197,6 @@ export default function App({ navigation, route }) {
         contentContainerStyle={{ marginTop: 10 }}
       />
     </SafeAreaView>
-
-    {/* nav Section */}
-    {/* <SafeAreaView style={styles.nav}>
-
-      <TouchableOpacity style={styles.padTouch}>
-        <Icon name='film' size={20} color='pink'/>
-        <Text style={{ color: 'pink' }}>Home</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.padTouch}>
-        <Icon name='check' size={20} color='black'/>
-        <Text style={{ color: 'grey' }}>Search</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.padTouch}>
-        <Icon name='plus' size={40} color='pink'/>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.padTouch}>
-        <Icon name='list' size={20} color='black'/>
-        <Text style={{ color: 'grey' }}>Friends</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.padTouch}>
-        <Icon name='user' size={20} color='black'/>
-        <Text style={{ color: 'grey' }}>My Profile</Text>
-      </TouchableOpacity>
-
-    </SafeAreaView> */}
   </ScrollView>
   );
 }

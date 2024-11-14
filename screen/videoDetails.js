@@ -1,25 +1,31 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, FlatList, TouchableOpacity, Image, useWindowDimensions, Modal,TextInput } from 'react-native';
+import { View, StyleSheet, Text, FlatList, TouchableOpacity, useWindowDimensions, Dimensions, Modal, TextInput, Button, Alert, Image } from 'react-native';
 import { Video } from 'expo-av';
-import axios from 'axios';
-import Icon from 'react-native-vector-icons/Entypo';
+import Icon from 'react-native-vector-icons/EvilIcons';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
-import Icon3 from 'react-native-vector-icons/EvilIcons';
+import axios from 'axios';
 
-export default function VideoStreaming({ navigation }) {
+export default function VideoStreaming({ navigation, route }) {
   const videoRefs = useRef([]);
   const [activePosId, setActivePostId] = useState(null);
   const { height } = useWindowDimensions();
   const [likedPosts, setLikedPosts] = useState({});
+  const id = route.params.idPost;
+  const idUser = route.params.idUser;
+  const avatar = route.params;
+
   const [videos, setVideos] = useState([]);
   const [comments, setComments] = useState([]);
   const [isCommentsVisible, setCommentsVisible] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  // const widthScreen = Dimensions.get('window').width;
+
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.151:3000/videoStreaming`);
+      const response = await axios.get(`http://192.168.1.151:3000/videoDetails?id=${id}`);
       if (Array.isArray(response.data) && response.data.length > 0) {
         setVideos(response.data);
-        setActivePostId(response.data[0].idPost);
+        setActivePostId(response.data[0].id);
       }
     } catch (error) {
       console.error("Error fetching video data:", error);
@@ -27,8 +33,10 @@ export default function VideoStreaming({ navigation }) {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (id) {
+      fetchData(id); 
+    }
+  }, [id]);
 
   const handlePlayPause = (index) => {
     const video = videoRefs.current[index];
@@ -43,33 +51,17 @@ export default function VideoStreaming({ navigation }) {
     }
   };
 
-  const toggleLike = (id) => {
-    setLikedPosts(prev => ({ ...prev, [id]: !prev[id] }));
+  const toggleLike = (idPost) => {
+    setLikedPosts(prev => ({ ...prev, [idPost]: !prev[idPost] }));
   };
 
-  const handleViewableItemsChanged = ({ viewableItems }) => {
-    if (viewableItems.length > 0) {
-      const newActivePostId = viewableItems[0].item.idPost;
-      setActivePostId(newActivePostId);
-
-      videoRefs.current.forEach((video, index) => {
-        if (video) {
-          if (videos[index].idPost === newActivePostId) {
-            video.playAsync();
-          } else {
-            video.pauseAsync();
-          }
-        }
-      });
-    }
-  };
-
-  const fetchComments = async (id) => {
+  const fetchComments = async () => {
+    
     try {
       const response = await axios.get(`http://192.168.1.151:3000/comment?id=${id}`);
       if (response.status === 200) {
         setComments(response.data);
-        setCommentsVisible(true);
+        setCommentsVisible(true); // Show the modal
       } else {
         Alert.alert("Lỗi", "Không thể lấy bình luận. Vui lòng thử lại sau.");
       }
@@ -79,10 +71,13 @@ export default function VideoStreaming({ navigation }) {
     }
   };
 
+  // const handleAddComment = () => {
+  //   const newCommentData = { id: Date.now().toString(), text: newComment };
+  //   setComments([...comments, newCommentData]); // Add the new comment
+  //   setNewComment(''); // Clear the input
+  // };
+
   const renderVideo = ({ item, index }) => (
-
-    
-
     <View style={[styles.videoContainer, { height }]}>
       <TouchableOpacity onPress={() => handlePlayPause(index)}>
         <Video
@@ -95,11 +90,9 @@ export default function VideoStreaming({ navigation }) {
         />
       </TouchableOpacity>
       <View style={styles.boxIcon}>
+
         <TouchableOpacity>
-          <Image
-            style={{ height: 50, width: 50, borderRadius: 50, marginBottom: 10 }}
-            source={{ uri: item.avatar }}
-          />
+          <Image style={[{height: 50, width: 50, borderRadius: 50, marginBottom: 10}]} source={{uri: avatar.avatar}}/>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => toggleLike(item.idPost)}>
@@ -110,13 +103,10 @@ export default function VideoStreaming({ navigation }) {
             color={likedPosts[item.idPost] ? 'red' : 'white'}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => fetchComments(item.idPost)}>
+        <TouchableOpacity onPress={() => fetchComments(item.idPost)}> {/* Show comments modal */}
           <Icon2 style={styles.iconRight} name="comment-o" size={30} color="white" />
         </TouchableOpacity>
         <Icon2 style={styles.iconRight} name="bookmark-o" size={30} color="white" />
-      </View>
-      <View style={styles.boxName}>
-        <Text style={{ color: 'white', fontSize: 24 }}>{item.username}</Text>
       </View>
       <View style={styles.boxTitle}>
         <Text style={{ color: 'white', fontSize: 18 }}>{item.content}</Text>
@@ -134,19 +124,20 @@ export default function VideoStreaming({ navigation }) {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Icon name="chevron-thin-left" size={30} color="white" />
+        <Icon name='chevron-left' size={40} color="white" />
       </TouchableOpacity>
       <FlatList
         data={videos}
         renderItem={renderVideo}
-        keyExtractor={item => item.idPost.toString()}
-        onViewableItemsChanged={handleViewableItemsChanged}
+        keyExtractor={item => item.idPost}
         viewabilityConfig={{
           itemVisiblePercentThreshold: 50,
         }}
         pagingEnabled
         showsVerticalScrollIndicator={false}
       />
+      
+      {/* Comment Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -157,7 +148,7 @@ export default function VideoStreaming({ navigation }) {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Bình luận</Text>
             <TouchableOpacity>
-              <Icon3 style={styles.close} name='close' size={30} color='black' onPress={() => setCommentsVisible(false)}/>
+              <Icon style={styles.close} name='close' size={30} color='black' onPress={() => setCommentsVisible(false)}/>
             </TouchableOpacity>
             <FlatList
               data={comments}
@@ -187,8 +178,8 @@ export default function VideoStreaming({ navigation }) {
                 style={styles.input}
                 placeholder='Thêm bình luận...'
                 placeholderTextColor="#888"
-                // value={newComment}
-                // onChangeText={setNewComment}
+                value={newComment}
+                onChangeText={setNewComment}
               />
               <Icon2 name="paper-plane" size={20} color="pink"/>
             </View>
@@ -221,7 +212,7 @@ const styles = StyleSheet.create({
   },
   boxIcon: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 70,
     right: 20,
     alignItems: 'center',
   },
@@ -231,10 +222,6 @@ const styles = StyleSheet.create({
   boxTitle: {
     position: 'absolute',
     bottom: 60,
-    left: 20,
-  },  boxName: {
-    position: 'absolute',
-    bottom: 80,
     left: 20,
   },
   music: {

@@ -43,7 +43,10 @@ app.get('/account', async (req, res) => {
 
 // API Endpoint để lấy danh sách follow
 app.get('/follow', async (req, res) => {
-  const { id } = req.query;  // Lấy id từ query parameters, thay vì req.body
+  let id = parseInt(req.query.id, 10); // Parse id to an integer
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid ID parameter. Must be a number." });
+  }
   try {
     const pool = req.app.locals.db;
     const result = await pool.request()
@@ -54,12 +57,51 @@ app.get('/follow', async (req, res) => {
           SUM(CASE WHEN f.id_followed = @id THEN 1 ELSE 0 END) AS followers_count
         FROM Follow f;
       `);
-    res.json(result.recordset); // Trả về dữ liệu
+    res.json(result.recordset);
   } catch (err) {
     console.log('Error fetching follow counts:', err);
     res.status(500).send('Server Error');
   }
 });
+
+// Same fix applied to other routes
+app.get('/profilevideos', async (req, res) => {
+  let id = parseInt(req.query.id, 10);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid ID parameter. Must be a number." });
+  }
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('id', mssql.Int, id)
+      .query(`
+        SELECT p.url, p.idPost, u.idUser, u.avatar FROM Post p INNER JOIN Users u
+        ON p.idUser = u.idUser WHERE p.type= 'video' AND p.idUser = @id
+      `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching profile videos:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+app.get('/videoStreaming', async (req, res) => {
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .query(`
+        SELECT * FROM Post p 
+        INNER JOIN Users u ON p.idUser = u.idUser
+        where p.type = 'video'
+        ORDER BY p.idPost DESC;
+      `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching video details:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
 
 // API Endpoint để lấy danh sách video in profile
 app.get('/profilevideos', async (req, res) => {
@@ -78,6 +120,48 @@ app.get('/profilevideos', async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
+
+// API Endpoint để lấy danh sách videoDetails
+app.get('/videoDetails', async (req, res) => {
+  const { id } = req.query;
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('id', mssql.Int, id)
+      .query(`select * from Post where idPost = @id`);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching follow counts:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// API Endpoint để lấy danh sách comment cua 1 video
+app.get('/comment', async (req, res) => {
+  const { id } = req.query;
+  const parsedId = parseInt(id, 10);
+  if (isNaN(parsedId)) {
+    return res.status(400).send('Invalid id parameter');
+  }
+
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('id', mssql.Int, parsedId)
+      .query(`
+        select c.text, c.time, u.avatar, u.username from Comment c
+        inner join Post p on c.idPost = p.idPost 
+        inner join Users u on u.idUser = c.idUser
+        where c.idPost = @id
+      `);
+
+    res.json(result.recordset); // Return the fetched comments
+  } catch (err) {
+    console.log('Error fetching comments:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
 
 
 // Khởi chạy server

@@ -16,6 +16,7 @@ import post from './screen/Post_Video_Screen.js';
 import plus from './screen/Create_Video.js';
 import Following from './screen/following.js';
 import profileDetails from './screen/profiledetails.js';
+import videoDetails from './screen/videoDetails.js';
 import { TouchableOpacity } from 'react-native';
 
 
@@ -66,7 +67,7 @@ function TabNavigator({route}) {
         initialParams={{ userData }}
         component={FriendsScreen}
         options={{
-          headerShown: false,
+          // headerShown: false,
           tabBarIcon: ({ color }) => <Icon2 name="users" size={25} color={color} />,
         }}
       />
@@ -122,6 +123,10 @@ export default function App() {
             name='Post' 
             component={post}
         />
+        <Stack.Screen 
+            name='VideoDetails' 
+            component={videoDetails}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -137,7 +142,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderBottomColor: 'grey',
     borderBottomWidth: .3,
-    // paddingTop: 40
+    paddingTop: 40
   },
   headerTitle: {
     fontSize: 18,
@@ -147,37 +152,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 10,
     alignItems: 'center',
-    // paddingTop: 40,
+    paddingTop: 40,
     backgroundColor: 'white',
 }
 })
-
-// import React, { useEffect, useState } from 'react';
-// import { View, Text } from 'react-native';
-// import axios from 'axios';
-
-// const App = () => {
-//   const [users, setUsers] = useState([]);
-
-//   useEffect(() => {
-//     axios.get('http://localhost:3000/users')
-//       .then(response => {
-//         setUsers(response.data);
-//       })
-//       .catch(error => {
-//         console.error('Error fetching users:', error);
-//       });
-//   }, []);
-
-//   return (
-//     <View>
-//       {users.map(user => (
-//         <Text key={user._id}>{user.username} - {user.email} - {user.age}</Text>
-//       ))}
-//     </View>
-//   );
-// };
-
-// export default App;
-
 

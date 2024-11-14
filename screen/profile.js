@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Dimensions, FlatList, TouchableOpacity, StyleSheet, Text, View, Image } from 'react-native';
 import axios from 'axios';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-
+import { useNavigation } from '@react-navigation/native';
 const MyVideos = ({ id }) => {
     const [videos, setVideos] = useState([]);
-  
+    const navigation = useNavigation();
     const fetchData = async (id) => {
       try {
         const response = await axios.get(`http://192.168.1.151:3000/profilevideos?id=${id}`);
@@ -28,7 +28,7 @@ const MyVideos = ({ id }) => {
         data={videos}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.videoItem}>
+          <TouchableOpacity style={styles.videoItem} onPress={()=> navigation.navigate('VideoDetails', {idPost: item.idPost, idUser: item.idUser, avatar: item.avatar})}>
             <Image style={{height: '100%', width: '100%', borderRadius: 10}} 
                 source={{uri : 'https://th.bing.com/th/id/OIP.jDGFZ_VnZ9e6eHNOJnBYAAHaEK?rs=1&pid=ImgDetMain.jpg'}}/>
             {/* <Text style={{color: 'white'}}>{item.url}</Text> */}
@@ -99,7 +99,7 @@ const MyVideosTabView = ({ id }) => {
   ]);
 
   const renderScene = SceneMap({
-    videos: () => <MyVideos id={id} />,
+    videos: () => <MyVideos id={id}/>,
     images: MyImages,
     liked: MyLiked,
   });
