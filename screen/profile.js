@@ -30,7 +30,7 @@ const MyVideos = ({ id }) => {
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.videoItem} onPress={()=> navigation.navigate('VideoDetails', {idPost: item.idPost, idUser: item.idUser, avatar: item.avatar})}>
             <Image style={{height: '100%', width: '100%', borderRadius: 10}} 
-                source={{uri : 'https://th.bing.com/th/id/OIP.jDGFZ_VnZ9e6eHNOJnBYAAHaEK?rs=1&pid=ImgDetMain.jpg'}}/>
+                source={{uri : 'https://pngmagic.com/product_images/black-background-for-youtube-thumbnail.jpg'}}/>
             {/* <Text style={{color: 'white'}}>{item.url}</Text> */}
           </TouchableOpacity>
         )}

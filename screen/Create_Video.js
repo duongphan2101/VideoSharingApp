@@ -1,17 +1,20 @@
-import React, { useState } from "react";
-import {
-  SafeAreaView,
-  Modal,
-  View,
-  Text,
-  ImageBackground,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-} from "react-native";
+import * as ImagePicker from 'expo-image-picker';
+import { Image, View, Text, Alert, Modal,StyleSheet, FlatList } from 'react-native';
+import { Video } from 'expo-av';
+import React, { useState, useEffect } from 'react';
+import { TouchableOpacity } from 'react-native';
+import Icon from '@expo/vector-icons/Entypo'
+import Fontisto from '@expo/vector-icons/Fontisto';
 import { Ionicons } from "@expo/vector-icons";
-import post from './Post_Video_Screen';
+
+export default function MediaPickerExample({ navigation, route }) {
+  const [media, setMedia] = useState(null);
+  const [mediaType, setMediaType] = useState(null);
+  const [isFilterModalVisible, setFilterModalVisible] = useState(false);
+  const [isAudioModalVisible, setAudioModalVisible] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("For you");
+  const user = route.params.userData;
+
 const filterOptions = [
   {
     id: "1",
@@ -90,11 +93,6 @@ const audioOptions = [
 
 const filterCategories = ["For you", "Trending", "Saved"];
 
-export default function App({navigation}) {
-  const [isFilterModalVisible, setFilterModalVisible] = useState(false);
-  const [isAudioModalVisible, setAudioModalVisible] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("For you");
-
   const toggleFilterModal = () => {
     setFilterModalVisible(!isFilterModalVisible);
   };
@@ -102,30 +100,82 @@ export default function App({navigation}) {
   const toggleAudioModal = () => {
     setAudioModalVisible(!isAudioModalVisible);
   };
+  useEffect(() => {
+    recordMedia();
+  }, []);
+
+  const pickMedia = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Bạn cần cấp quyền để truy cập thư viện!');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+    });
+
+    if (!result.canceled) {
+      setMedia(result.assets[0].uri);
+      setMediaType(result.assets[0].type);
+    }
+  };
+
+  const recordMedia = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Bạn cần cấp quyền để truy cập camera!');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setMedia(result.assets[0].uri);
+      setMediaType(result.assets[0].type);
+    }
+  };
+
+  const confirmMedia = () => {
+    if (media) {
+      navigation.navigate('Post', { media, mediaType, user });
+    } else {
+      Alert.alert("Lỗi", "Không có phương tiện nào để xác nhận!");
+    }
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ImageBackground
-        source={require("../assets/Create_Video_Select_Filter/Image_35.png")}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      >
-        <View style={styles.header}>
-          <TouchableOpacity onPress={()=> navigation.goBack()}>
-            <Ionicons name="close" size={24} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.addAudioButton}
-            onPress={toggleAudioModal}
-          >
+    <View style={{ flex: 1, backgroundColor: 'black'}}>
+           <TouchableOpacity
+            style={{alignSelf: 'center', position: 'absolute', top: 140, zIndex: 111}}
+            onPress={toggleAudioModal}>
             <Image
               source={require("../assets/Create_Video_Select_Filter/Button_9.png")}
             />
           </TouchableOpacity>
-        </View>
+      {media && mediaType === 'image' && (
+        <Image
+          source={{ uri: media }}
+          style={{ width: 'auto', height: 'auto' , flex: 1}}
+          resizeMode="contain"
+        />
+      )}
 
-        <View style={styles.sideButtons}>
-          <TouchableOpacity style={styles.sideButton}>
+      {media && mediaType === 'video' && (
+        <Video
+          source={{ uri: media }}
+          style={{ width: 'auto', height: 'auto' , flex: 1}}
+          useNativeControls
+          resizeMode="contain"
+          isLooping
+        />
+      )}
+
+      <View style={styles.sideButtons}>
+        <TouchableOpacity style={styles.sideButton}>
             <Image
               source={require("../assets/Create_Video_Select_Filter/Repeat_2.png")}
               style={styles.icon}
@@ -150,21 +200,20 @@ export default function App({navigation}) {
         </View>
         {/* Bottom Buttons */}
         <View style={styles.bottomButtonsContainer}>
-          <TouchableOpacity style={styles.bottomButton}>
+          <TouchableOpacity style={styles.bottomButton} onPress={recordMedia}>
             <Ionicons name="happy-outline" size={24} color="white" />
             <Text style={styles.bottomButtonText}>Effect</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.captureButton} onPress={()=> navigation.navigate('Post')}>
+          <TouchableOpacity style={styles.captureButton} onPress={confirmMedia}>
             <Image source={require('../assets/CreateVideo-UploadVideo/Container54.png')}/>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.bottomButton}>
+          <TouchableOpacity style={styles.bottomButton} onPress={pickMedia}>
             <Ionicons name="image-outline" size={24} color="white" />
             <Text style={styles.bottomButtonText}>Upload</Text>
           </TouchableOpacity>
         </View>
-      </ImageBackground>
 
       {/* Filter Modal */}
       <Modal
@@ -220,8 +269,8 @@ export default function App({navigation}) {
         </View>
       </Modal>
 
-      {/* Add Audio Modal */}
-      <Modal
+{/* Add Audio Modal */}
+       <Modal
         visible={isAudioModalVisible}
         animationType="slide"
         transparent={true}
@@ -279,30 +328,14 @@ export default function App({navigation}) {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+
+    </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-  },
-  backgroundImage: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    paddingTop: 50,
-  },
-  addAudioButton: {
-    alignSelf: "center",
-    marginRight: 127,
   },
   sideButtons: {
     position: "absolute",
@@ -435,7 +468,7 @@ const styles = StyleSheet.create({
   },
   bottomButtonsContainer: {
     position: "absolute",
-    bottom: 30,
+    bottom: 10,
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-around",
@@ -455,7 +488,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: 30, // Adjust this value as needed to move the button to the right
   },
   captureIcon: {
     width: 60,

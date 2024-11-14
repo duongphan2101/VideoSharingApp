@@ -1,21 +1,66 @@
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native";
-import { View, StyleSheet, Image, Dimensions, ScrollView } from "react-native";
+import { View, StyleSheet, Image, Dimensions, ScrollView , Alert} from "react-native";
 import { TextInput, Text } from "react-native";
+import { Video } from 'expo-av';
 import { Ionicons } from "@expo/vector-icons";
+import axios from 'axios';
 
-const Post_Video_Screen = ({ navigation }) => {
+const Post_Video_Screen = ({ navigation, route }) => {
+  const { media, mediaType, user } = route.params;
+  const [content, setContent] = useState("");
+  const postMedia = async (idUser, type, url, navigation) => {
+    try {
+      const response = await axios.post('http://192.168.1.151:3000/savePost', {
+        idUser,
+        type,
+        url,
+        content,
+      });
+  
+      if (response.status === 201) {
+        Alert.alert("Thành công", "Bài viết đã được lưu thành công!");
+        navigation.navigate('Home');
+      } else {
+        Alert.alert("Lỗi", "Đã xảy ra lỗi khi lưu bài viết vào cơ sở dữ liệu.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+      Alert.alert("Lỗi", "Không thể kết nối tới máy chủ.");
+    }
+  };
+
+  const post = () => {
+    // console.log(media)
+    // console.log(mediaType)
+    // console.log(content)
+    // console.log(user.idUser)
+
+    postMedia(user.idUser, mediaType, media, navigation);
+  }
+  
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <TouchableOpacity style={{position: 'absolute', top: 20, left: 20, zIndex: 11}} onPress={()=> navigation.goBack()}>
         <Ionicons  name="close" size={24} color="black"/>
       </TouchableOpacity>
       <View style={styles.imageContainer}>
-        <Image
-          source={require("../assets/CreateVideo-PostVideo/Image56.png")}
-          style={styles.image}
-          resizeMode="contain"
-        />
+        {mediaType === 'image' && (
+          <Image
+            source={{ uri: media }}
+            style={{flex: 1, width: 300, height: 300}}
+            resizeMode="contain"
+          />
+        )}
+
+        {mediaType === 'video' && (
+          <Video
+            source={{ uri: media }}
+            style={{flex: 1, width: 300, height: 300}}
+            resizeMode="contain"
+            isLooping
+          />
+        )}
         <TouchableOpacity>
           <Image
             source={require("../assets/CreateVideo-PostVideo/Button16.png")}
@@ -28,6 +73,8 @@ const Post_Video_Screen = ({ navigation }) => {
           style={styles.input}
           placeholder="Input title"
           placeholderTextColor="rgba(0, 0, 0, 0.2)"
+          value={content}
+          onChangeText={setContent}
         />
       </View>
 
@@ -115,7 +162,7 @@ const Post_Video_Screen = ({ navigation }) => {
             source={require("../assets/CreateVideo-PostVideo/Button17.png")}
           />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={post}> 
           <Image
             source={require("../assets/CreateVideo-PostVideo/Button18.png")}
           />
@@ -123,6 +170,7 @@ const Post_Video_Screen = ({ navigation }) => {
       </View>
     </ScrollView>
   );
+
 };
 
 const { width, height } = Dimensions.get("window");

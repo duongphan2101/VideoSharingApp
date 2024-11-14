@@ -113,6 +113,7 @@ app.get('/profilevideos', async (req, res) => {
       .query(`
         select p.url from Post p inner join Users u
         on p.idUser = u.idUser where p.type= 'video' and p.idUser = @id
+        ORDER BY p.idPost DESC;
       `);
     res.json(result.recordset);
   } catch (err) {
@@ -155,14 +156,42 @@ app.get('/comment', async (req, res) => {
         where c.idPost = @id
       `);
 
-    res.json(result.recordset); // Return the fetched comments
+    res.json(result.recordset);
   } catch (err) {
     console.log('Error fetching comments:', err);
     res.status(500).send('Server Error');
   }
 });
 
+// Endpoint để lưu bài viết mới
+app.post('/savePost', async (req, res) => {
+  const { idUser, type, url, content } = req.body;
+  const count_like = 0;
+  const count_comment = 0;
+  if (!idUser || !type || !url || !content) {
+    return res.status(400).json({ error: 'Vui lòng cung cấp idUser, type, url và content.' });
+  }
 
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('idUser', mssql.Int, idUser)
+      .input('type', mssql.NVarChar, type)
+      .input('url', mssql.NVarChar, url)
+      .input('content', mssql.NVarChar, content)
+      .input('count_like', mssql.Int, count_like)
+      .input('count_comment', mssql.Int, count_comment)
+      .query(`
+        INSERT INTO dbo.Post (idUser, type, url, content, upload_at, count_like, count_comment)
+        VALUES (@idUser, @type, @url, @content, GETDATE(), @count_like, @count_comment)
+      `);
+
+    res.status(201).json({ message: 'Bài viết đã được lưu thành công!' });
+  } catch (error) {
+    console.error("Lỗi cơ sở dữ liệu:", error);
+    res.status(500).json({ error: 'Lỗi khi lưu bài viết vào cơ sở dữ liệu.' });
+  }
+});
 
 // Khởi chạy server
 app.listen(3000, () => {

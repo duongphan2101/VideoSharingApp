@@ -181,7 +181,7 @@ export default function VideoStreaming({ navigation, route }) {
                 value={newComment}
                 onChangeText={setNewComment}
               />
-              <Icon2 name="paper-plane" size={20} color="pink"/>
+              <Icon2 name='paper-plane' size={20} color="pink"/>
             </View>
             
           </View>

@@ -116,7 +116,7 @@ export default function VideoStreaming({ navigation }) {
         <Icon2 style={styles.iconRight} name="bookmark-o" size={30} color="white" />
       </View>
       <View style={styles.boxName}>
-        <Text style={{ color: 'white', fontSize: 24 }}>{item.username}</Text>
+        <Text style={{ color: 'white', fontSize: 24, fontWeight: 'bold' }}>{item.username}</Text>
       </View>
       <View style={styles.boxTitle}>
         <Text style={{ color: 'white', fontSize: 18 }}>{item.content}</Text>
