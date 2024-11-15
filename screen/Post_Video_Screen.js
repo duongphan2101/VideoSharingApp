@@ -31,11 +31,6 @@ const Post_Video_Screen = ({ navigation, route }) => {
   };
 
   const post = () => {
-    // console.log(media)
-    // console.log(mediaType)
-    // console.log(content)
-    // console.log(user.idUser)
-
     postMedia(user.idUser, mediaType, media, navigation);
   }
   

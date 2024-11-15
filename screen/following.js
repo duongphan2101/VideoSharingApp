@@ -33,7 +33,7 @@ const MyVideos = ({idUser}) => {
             renderItem={({item}) => (
                 <TouchableOpacity style={styles.cardPeople} onPress={() => click({user: item})}>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <Image source={{uri: item.avatar}} style={{height: 50, width: 50}}/>
+                        <Image source={{uri: item.avatar}} style={{height: 50, width: 50, borderRadius: 50}}/>
                         <Text style={{marginLeft: 20, fontSize: 20}}>{item.username}</Text>
                     </View>
                     <View style={{borderWidth: .3, borderColor: 'black', padding: 10, borderRadius: 10}}>
@@ -75,7 +75,7 @@ const MyImages = ({idUser}) => {
             renderItem={({item}) => (
                 <TouchableOpacity style={styles.cardPeople} onPress={() => click({user: item})}>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <Image source={{uri: item.avatar}} style={{height: 50, width: 50}}/>
+                        <Image source={{uri: item.avatar}} style={{height: 50, width: 50, borderRadius: 50}}/>
                         <Text style={{marginLeft: 20, fontSize: 20}}>{item.username}</Text>
                     </View>
                     <View style={{borderWidth: .3, borderColor: 'black', padding: 10, borderRadius: 10}}>
@@ -148,7 +148,7 @@ export default function App({ navigation, route }) {
             <View style={styles.head}>
                 <View style={styles.leftHead}>
                     <Icon2 name='angle-left' size={30} color='black' onPress={() => navigation.goBack()}/>
-                    <Image style={{ height: 50, width: 50, marginHorizontal: 10 }} source={{uri: user.avatar}}/>
+                    <Image style={{ height: 50, width: 50, borderRadius: 50, marginHorizontal: 10 }} source={{uri: user.avatar}}/>
                     <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{user.username}</Text>
                 </View>
                 <View style={styles.leftHead}>

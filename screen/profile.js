@@ -42,21 +42,41 @@ const MyVideos = ({ id }) => {
   };
   
 
-const MyImages = () => {
-  return (
-    <FlatList
-      data={dataVideos}
-      showsVerticalScrollIndicator={false}
-      renderItem={({ item }) => (
-        <TouchableOpacity style={styles.videoItem}>
-          <Image source={item.image} />
-        </TouchableOpacity>
-      )}
-      keyExtractor={item => item.id}
-      numColumns={3}
-      contentContainerStyle={{ alignItems: 'center', marginTop: 10 }}
-    />
-  );
+const MyImages = ({id}) => {
+  const [images, setImages] = useState([]);
+    const navigation = useNavigation();
+    const fetchData = async (id) => {
+      try {
+        const response = await axios.get(`http://192.168.1.151:3000/profileimages?id=${id}`);
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setImages(response.data);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+      }
+    };
+  
+    useEffect(() => {
+      if (id) {
+        fetchData(id); 
+      }
+    }, [id]);
+
+    return (
+      <FlatList
+        data={images}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.videoItem} onPress={() => navigation.navigate('ImageView', { imageUrl: item.url })}>
+            <Image style={{height: '100%', width: '100%', borderRadius: 10}} 
+                source={{uri : item.url}}/>
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item, index) => index.toString()}
+        numColumns={3}
+        contentContainerStyle={{ alignItems: 'flex-start', marginTop: 10, justifyContent: 'flex-start' }}
+      />
+    );
 };
 
 const MyLiked = () => {
@@ -100,7 +120,7 @@ const MyVideosTabView = ({ id }) => {
 
   const renderScene = SceneMap({
     videos: () => <MyVideos id={id}/>,
-    images: MyImages,
+    images: () => <MyImages id={id}/>,
     liked: MyLiked,
   });
 
@@ -153,7 +173,7 @@ export default function App({ navigation, route }) {
   return (
     <View style={styles.container}>
       <View style={styles.imgLogo}>
-        <Image style={{ height: 150, width: 150 }} source={{ uri: user.avatar }} />
+        <Image style={{ height: 150, width: 150, borderRadius: 150 }} source={{ uri: user.avatar }} />
         <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{user.username}</Text>
         <View style={{ flexDirection: 'row', marginTop: 20 }}>
           <TouchableOpacity style={styles.fl} onPress={() => navigation.navigate('Following', {user: user})}>

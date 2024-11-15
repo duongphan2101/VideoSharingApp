@@ -17,8 +17,9 @@ import plus from './screen/Create_Video.js';
 import Following from './screen/following.js';
 import profileDetails from './screen/profiledetails.js';
 import videoDetails from './screen/videoDetails.js';
+import editProfile from './screen/EditProfile.js';
+import ImageView from './screen/ImageView.js';
 import { TouchableOpacity } from 'react-native';
-
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -82,7 +83,7 @@ function TabNavigator({navigation, route}) {
                     <Icon2 style={{ paddingHorizontal: 10 }} name="navicon" size={20} color="black" onPress={()=> navigation.navigate('Login')}/>
                     <Icon2 style={{ paddingHorizontal: 10 }} name="user-plus" size={20} color="black" />
                 </View>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={()=> navigation.navigate('EditProfile', {user: userData})}>
                     <Icon2 style={{ color: 'pink', paddingHorizontal: 5 }} name="pencil" size={20} />
                     <Text style={{ color: 'pink', paddingHorizontal: 5 }}>Edit Profile</Text>
                 </TouchableOpacity>
@@ -98,34 +99,62 @@ function TabNavigator({navigation, route}) {
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Login' screenOptions={{headerShown: false}}>
+      <Stack.Navigator initialRouteName='Login'>
         <Stack.Screen 
             name='Login' 
             component={login}
+            options={{
+              headerShown: false}}
           />
         <Stack.Screen 
             name='VideoSharingApp' 
             component={TabNavigator}
+            options={{
+              headerShown: false}}
           />
         <Stack.Screen 
             name='VideoStreaming'
             component={videoStreaming}
+            options={{
+              headerShown: false}}
         />
         <Stack.Screen 
             name='Following' 
             component={Following}
+            options={{
+              headerShown: false}}
         />
         <Stack.Screen 
             name='ProfileDetails' 
             component={profileDetails}
+            options={{
+              headerShown: false}}
         />
         <Stack.Screen 
             name='Post' 
             component={post}
+            options={{
+              headerShown: false}}
         />
         <Stack.Screen 
             name='VideoDetails' 
             component={videoDetails}
+            options={{
+              headerShown: false}}
+        />
+        <Stack.Screen 
+            name='EditProfile' 
+            component={editProfile}
+            options={{
+              headerTitle:""
+            }}
+        />
+        <Stack.Screen 
+            name='ImageView' 
+            component={ImageView}
+            options={{
+              headerTitle:""
+            }}
         />
       </Stack.Navigator>
     </NavigationContainer>

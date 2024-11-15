@@ -33,7 +33,8 @@ mssql.connect(config)
 app.get('/account', async (req, res) => {
   try {
     const pool = req.app.locals.db;
-    const result = await pool.request().query('SELECT u.*, a.pass FROM Account a inner join' + ' Users u on a.idUser = u.idUser');
+    const result = await pool.request().query(`SELECT u.*,a.username as account_user, 
+      a.pass FROM Account a inner join  Users u on a.idUser = u.idUser`);
     res.json(result.recordset); // Trả về dữ liệu
   } catch (err) {
     console.log('Error fetching Accounts from MSSQL:', err);
@@ -66,7 +67,7 @@ app.get('/follow', async (req, res) => {
 
 // API Endpoint để lấy danh sách da~ follow
 app.get('/followed', async (req, res) => {
-  let id = parseInt(req.query.id, 10); // Parse id to an integer
+  let id = parseInt(req.query.id, 10);
   if (isNaN(id)) {
     return res.status(400).json({ error: "Invalid ID parameter. Must be a number." });
   }
@@ -121,6 +122,27 @@ app.get('/profilevideos', async (req, res) => {
       .query(`
         SELECT p.url, p.idPost, u.idUser, u.avatar FROM Post p INNER JOIN Users u
         ON p.idUser = u.idUser WHERE p.type= 'video' AND p.idUser = @id
+      `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching profile videos:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// endpoint lay danh sach anh profile
+app.get('/profileimages', async (req, res) => {
+  let id = parseInt(req.query.id, 10);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid ID parameter. Must be a number." });
+  }
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('id', mssql.Int, id)
+      .query(`
+        SELECT p.url, p.idPost, u.idUser, u.avatar FROM Post p INNER JOIN Users u
+        ON p.idUser = u.idUser WHERE p.type= 'image' AND p.idUser = @id
       `);
     res.json(result.recordset);
   } catch (err) {
@@ -283,6 +305,49 @@ app.post('/savePost', async (req, res) => {
     res.status(500).json({ error: 'Lỗi khi lưu bài viết vào cơ sở dữ liệu.' });
   }
 });
+
+// Update Profile Endpoint
+app.put('/updateProfile', async (req, res) => {
+  const { idUser, username, avatar, sdt, email, birthDay } = req.body;
+
+  if (!idUser || !username || !sdt || !email || !birthDay) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  try {
+    const pool = req.app.locals.db;
+
+    const query = `
+      UPDATE [Users]
+      SET 
+        username = @username,
+        avatar = @avatar,
+        sdt = @sdt,
+        email = @email,
+        birthDay = @birthDay
+      WHERE idUser = @idUser
+    `;
+
+    const result = await pool.request()
+      .input('idUser', mssql.Int, idUser)
+      .input('username', mssql.NVarChar, username)
+      .input('avatar', mssql.NVarChar, avatar)
+      .input('sdt', mssql.NVarChar, sdt)
+      .input('email', mssql.NVarChar, email)
+      .input('birthDay', mssql.DateTime, new Date(birthDay))
+      .query(query);
+
+    if (result.rowsAffected[0] > 0) {
+      res.status(200).json({ message: 'Profile updated successfully' });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 // Khởi chạy server
 app.listen(3000, () => {

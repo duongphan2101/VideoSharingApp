@@ -35,10 +35,6 @@ const MyVideos = ({id}) => {
         }
      }, [id]);
 
-    useEffect(() => {
-        console.log(videos)
-      }, [videos]);
-  
     return (
       <FlatList
         data={videos}
@@ -145,7 +141,7 @@ export default function App({ navigation, route }) {
             </View>
 
             <View style={styles.imgLogo}>
-                <Image style={{ height: 150, width: 150 }} source={{ uri: user.avatar }} />
+                <Image style={{ height: 150, width: 150, borderRadius: 150 }} source={{ uri: user.avatar }} />
                 <Text style={{ fontSize: 24, fontWeight: 'bold', paddingVertical: 10 }}>{user.username}</Text>
             </View>
 

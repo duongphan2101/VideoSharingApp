@@ -22,7 +22,7 @@ export default function App({navigation}) {
   const [pass, setPass] = useState("");
 
   const handleLogin = () => {
-    const checkAccount = data.find(item => item.username === user && item.pass === pass);
+    const checkAccount = data.find(item => item.account_user === user && item.pass === pass);
       if(checkAccount){
         navigation.navigate('VideoSharingApp', {userData: checkAccount });
     }else{
@@ -44,7 +44,7 @@ export default function App({navigation}) {
             <View style={styles.input}>
                 <Icon name='lock' size={30} color={'white'}/>
                 <TextInput style={{marginLeft: 10, flex: 1, paddingHorizontal: 10, color: 'white'}} placeholder='password'
-                 placeholderTextColor={'white'} value={pass} onChangeText={setPass}/>
+                 secureTextEntry placeholderTextColor={'white'} value={pass} onChangeText={setPass}/>
             </View>
 
             <TouchableOpacity style={styles.Touch} onPress={handleLogin}>

@@ -99,7 +99,7 @@ export default function VideoStreaming({ navigation }) {
         />
       </TouchableOpacity>
       <View style={styles.boxIcon}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=> navigation.navigate('ProfileDetails', {user: item})}>
           <Image
             style={{ height: 50, width: 50, borderRadius: 50, marginBottom: 10 }}
             source={{ uri: item.avatar }}
@@ -190,7 +190,7 @@ export default function VideoStreaming({ navigation }) {
               renderItem={({ item }) => (
                 <View style={{ flexDirection: 'row', padding: 5, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Image source={{ uri: item.avatar }} style={{ height: 50, width: 50 }} />
+                    <Image source={{ uri: item.avatar }} style={{ height: 50, width: 50, borderRadius: 50 }} />
                     <View style={{ paddingLeft: 10 }}>
                       <Text style={styles.commentText}>{item.username}</Text>
                       <Text style={{ fontSize: 11, color: 'gray', marginTop: -8, marginBottom: 5 }}>{item.time}</Text>

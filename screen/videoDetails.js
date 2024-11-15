@@ -37,7 +37,7 @@ export default function VideoStreaming({ navigation, route }) {
 
   useEffect(() => {
     if (id) {
-      fetchData(id); 
+      fetchData(id);
     }
   }, [id]);
 
@@ -59,7 +59,7 @@ export default function VideoStreaming({ navigation, route }) {
   };
 
   const fetchComments = async () => {
-    
+
     try {
       const response = await axios.get(`http://192.168.1.151:3000/comment?id=${id}`);
       if (response.status === 200) {
@@ -75,7 +75,7 @@ export default function VideoStreaming({ navigation, route }) {
   };
 
   const fetchCommentCount = async () => {
-    
+
     try {
       const response = await axios.get(`http://192.168.1.151:3000/commentCount?id=${id}`);
       if (response.status === 200) {
@@ -89,9 +89,9 @@ export default function VideoStreaming({ navigation, route }) {
     }
   };
 
-  
+
   const fetchLikeCount = async () => {
-    
+
     try {
       const response = await axios.get(`http://192.168.1.151:3000/LikeCount?id=${id}`);
       if (response.status === 200) {
@@ -126,7 +126,7 @@ export default function VideoStreaming({ navigation, route }) {
       <View style={styles.boxIcon}>
 
         <TouchableOpacity>
-          <Image style={[{height: 50, width: 50, borderRadius: 50, marginBottom: 10}]} source={{uri: avatar.avatar}}/>
+          <Image style={[{ height: 50, width: 50, borderRadius: 50, marginBottom: 10 }]} source={{ uri: avatar.avatar }} />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => toggleLike(item.idPost)}>
@@ -136,13 +136,13 @@ export default function VideoStreaming({ navigation, route }) {
             size={30}
             color={likedPosts[item.idPost] ? 'red' : 'white'}
           />
-          <Text style={styles.count}>{likecount[0]?.like_count || 0}</Text>
-
+          <Text style={styles.count}>{likecount[0]?.like_count ? likecount[0]?.like_count : 0}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => fetchComments(item.idPost)}> {/* Show comments modal */}
+        <TouchableOpacity onPress={() => fetchComments(item.idPost)}>
           <Icon2 style={styles.iconRight} name="comment-o" size={30} color="white" />
-          <Text style={styles.count}>{count[0]?.comment_count || 0}</Text>
+          <Text style={styles.count}>{count[0]?.comment_count ? count[0]?.comment_count : 0}</Text>
         </TouchableOpacity>
+
         <Icon2 style={styles.iconRight} name="bookmark-o" size={30} color="white" />
       </View>
       <View style={styles.boxTitle}>
@@ -173,7 +173,7 @@ export default function VideoStreaming({ navigation, route }) {
         pagingEnabled
         showsVerticalScrollIndicator={false}
       />
-      
+
       {/* Comment Modal */}
       <Modal
         animationType="slide"
@@ -185,19 +185,18 @@ export default function VideoStreaming({ navigation, route }) {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Bình luận</Text>
             <TouchableOpacity>
-              <Icon style={styles.close} name='close' size={30} color='black' onPress={() => setCommentsVisible(false)}/>
+              <Icon style={styles.close} name='close' size={30} color='black' onPress={() => setCommentsVisible(false)} />
             </TouchableOpacity>
             <FlatList
               data={comments}
               keyExtractor={comment => comment.id}
               renderItem={({ item }) => (
-                <View  style={{flexDirection: 'row', padding: 5, alignItems: 'center', flex: 1, justifyContent: 'space-between'}}>
-
-                  <View style={{flexDirection: 'row',alignItems: 'center'}}>
-                    <Image source={{uri: item.avatar}} style={{height: 50, width: 50}}/>
-                    <View style={{paddingLeft: 10}}>
+                <View style={{ flexDirection: 'row', padding: 5, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Image source={{ uri: item.avatar }} style={{ height: 50, width: 50, borderRadius: 50 }} />
+                    <View style={{ paddingLeft: 10 }}>
                       <Text style={styles.commentText}>{item.username}</Text>
-                      <Text style={{fontSize: 11, color: 'gray', marginTop: -8, marginBottom: 5}}>{item.time}</Text>
+                      <Text style={{ fontSize: 11, color: 'gray', marginTop: -8, marginBottom: 5 }}>{item.time}</Text>
                       <Text style={styles.commentText}>{item.text}</Text>
                     </View>
                   </View>
@@ -207,10 +206,10 @@ export default function VideoStreaming({ navigation, route }) {
                     color='gray'
                   />
                 </View>
-                
               )}
             />
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <TextInput
                 style={styles.input}
                 placeholder='Thêm bình luận...'
@@ -218,9 +217,9 @@ export default function VideoStreaming({ navigation, route }) {
                 value={newComment}
                 onChangeText={setNewComment}
               />
-              <Icon2 name='paper-plane' size={20} color="pink"/>
+              <Icon2 name='paper-plane' size={20} color="pink" />
             </View>
-            
+
           </View>
         </View>
       </Modal>
@@ -295,25 +294,25 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    paddingHorizontal: 8, 
+    paddingHorizontal: 8,
     flex: 1,
     backgroundColor: '#eee',
     borderRadius: 10,
     marginBottom: 10,
     marginRight: 10
   },
-  close : {
-    position: 'absolute', 
+  close: {
+    position: 'absolute',
     right: 0,
     top: -40
   },
-  count : {
-    color:'white'
+  count: {
+    color: 'white'
     , position: 'absolute'
     , alignSelf: 'center',
-     backgroundColor: 'black',
-     bottom: 5,
-     fontSize: 18
-    }
+    backgroundColor: 'black',
+    bottom: 5,
+    fontSize: 18
+  }
 
 });
