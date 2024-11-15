@@ -2,64 +2,80 @@ import { Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { useState } from 'react';
-import Following from './following';
-
+import { useState,  useEffect } from 'react';
+import axios from 'axios';
 const dataVideos = [
-    { id: '1', image: require('../assets/ProfileDetails/Container86.png')},
-    { id: '2', image: require('../assets/ProfileDetails/Container87.png')},
-    { id: '3', image: require('../assets/ProfileDetails/Container88.png')},
-    { id: '4', image: require('../assets/ProfileDetails/Container89.png')},
-    { id: '5', image: require('../assets/ProfileDetails/Container90.png')},
-    { id: '6', image: require('../assets/ProfileDetails/Container91.png')},
-  ];
+    { id: '1', image: require('../assets/ProfileDetails/Container86.png') },
+    { id: '2', image: require('../assets/ProfileDetails/Container87.png') },
+    { id: '3', image: require('../assets/ProfileDetails/Container88.png') },
+    { id: '4', image: require('../assets/ProfileDetails/Container89.png') },
+    { id: '5', image: require('../assets/ProfileDetails/Container90.png') },
+    { id: '6', image: require('../assets/ProfileDetails/Container91.png') },
+];
 
-  const dataFollowing = [
-    { id: '1', caption: 'Love is life color <3', name : 'Kiran Glaucus', image: require('../assets/Follow/Avatar31.png')},
-    { id: '2', caption: 'fan 24kRight', name : 'Sally Rooney', image: require('../assets/Follow/Avatar32.png')},
-    { id: '3', caption: 'this is the dogman', name : 'Marie Franco', image: require('../assets/Follow/Avatar36.png')},
-    { id: '4', caption: 'im crazy', name : 'Jena Nguyen', image: require('../assets/Follow/Avatar35.png')},
-    { id: '5', caption: 'nolove nolife', name : 'Kristin Watson', image: require('../assets/Follow/Avatar34.png')},
-  ];
+const widthScreen = Dimensions.get('window').width;
+import { useNavigation } from '@react-navigation/native';
+const MyVideos = ({id}) => {
+    const [videos, setVideos] = useState([]);
+    const navigation = useNavigation();
+    const fetchData = async (id) => {
+      try {
+        const response = await axios.get(`http://192.168.1.151:3000/profilevideos?id=${id}`);
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setVideos(response.data);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+      }
+    };
+  
+    useEffect(() => {
+        if (id) {
+          fetchData(id); 
+        }
+     }, [id]);
 
-  const MyVideos = () => {
-    return(
-        <FlatList
-            data={dataVideos}
-            showsVerticalScrollIndicator={false}
-            renderItem={({item}) => (
-                <TouchableOpacity style={styles.videoItem}>
-                    <Image source={item.image}/>
-                </TouchableOpacity>
-            )}
-            keyExtractor={item => item.id}
-            numColumns={3}
-            contentContainerStyle={{alignItems: 'center', marginTop: 10}}
-        />
+    useEffect(() => {
+        console.log(videos)
+      }, [videos]);
+  
+    return (
+      <FlatList
+        data={videos}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.videoItem} onPress={()=> navigation.navigate('VideoDetails', {idPost: item.idPost, idUser: item.idUser, avatar: item.avatar})}>
+            <Image style={{height: '100%', width: '100%', borderRadius: 10}} 
+                source={{uri : 'https://pngmagic.com/product_images/black-background-for-youtube-thumbnail.jpg'}}/>
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item, index) => index.toString()}
+        numColumns={3}
+        contentContainerStyle={{ alignItems: 'flex-start', marginTop: 10, justifyContent: 'flex-start', flex: 1}}
+      />
     );
 };
 
 
 const MyLiked = () => {
-    return(
+    return (
         <FlatList
             data={dataVideos}
             showsVerticalScrollIndicator={false}
-            renderItem={({item}) => (
+            renderItem={({ item }) => (
                 <TouchableOpacity style={styles.videoItem}>
-                    <Image source={item.image}/>
+                    <Image source={item.image} />
                 </TouchableOpacity>
             )}
             keyExtractor={item => item.id}
             numColumns={3}
-            contentContainerStyle={{alignItems: 'center', marginTop: 10}}
+            contentContainerStyle={{ alignItems: 'center', marginTop: 10 }}
         />
     );
 };
 
-const widthScreen = Dimensions.get('window').width;
 
-const MyVideosTabView = () => {
+const MyVideosTabView = ({id}) => {
     const [index, setIndex] = useState(0);
     const [routes] = useState([
         { key: 'videos', title: 'My Videos' },
@@ -67,7 +83,7 @@ const MyVideosTabView = () => {
     ]);
 
     const renderScene = SceneMap({
-        videos: MyVideos,
+        videos: () => <MyVideos id={id}/>,
         liked: MyLiked,
     });
 
@@ -90,91 +106,103 @@ const MyVideosTabView = () => {
             renderScene={renderScene}
             renderTabBar={renderTabBar}
             onIndexChange={setIndex}
-            initialLayout={{width: widthScreen}}
+            initialLayout={{ width: widthScreen }}
         />
     );
 };
 
 export default function App({ navigation, route }) {
-    
-    const id = route.params.userID;
-    const filteredData = dataFollowing.filter(item => item.id === id);
+    const user = route.params.user;
+    const [data, setData] = useState({});
+    const fetchData = async (id) => {
+        try {
+          const response = await axios.get(`http://192.168.1.151:3000/follow?id=${id}`);
+          if (Array.isArray(response.data) && response.data.length > 0) {
+            const followData = response.data[0];
+            setData(followData);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+
+  useEffect(() => {
+    if (user && user.idUser) {
+      fetchData(user.idUser);
+    }
+  }, [user]);
+
     return (
         <View style={[styles.container]}>
             <View style={styles.head}>
                 <View style={styles.leftHead}>
-                    <Icon2 name='angle-left' size={30} color='black' onPress={() => navigation.goBack()}/>
+                    <Icon2 name='angle-left' size={30} color='black' onPress={() => navigation.goBack()} />
                 </View>
                 <View style={styles.leftHead}>
-                    <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='bell-o' size={20} color='black'/></TouchableOpacity>
-                    <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='bars' size={20} color='black'/></TouchableOpacity>
+                    <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='bell-o' size={20} color='black' /></TouchableOpacity>
+                    <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='bars' size={20} color='black' /></TouchableOpacity>
                 </View>
             </View>
-           <FlatList
-                data={filteredData}
-                contentContainerStyle={{height: 50}}
-                renderItem={({item})=> (
-                    <View style={styles.imgLogo}>
-                        <Image style={{ height: 150, width: 150 }} source={item.image} />
-                        <Text style={{ fontSize: 24, fontWeight: 'bold', paddingVertical: 10}}>{item.name}</Text>
-                        <Text style={{ fontSize: 16}}>{item.caption}</Text>                      
-                    </View>
-                )}
-                keyExtractor={item => item.id}
-           />
-           <View style={{ flexDirection: 'row', marginTop: 0, alignItems: 'center', justifyContent: 'center'}}>
-                            <TouchableOpacity style={styles.fl}>
-                                <Text>203</Text>
-                                <Text style={styles.textgrey}>Following</Text>
-                            </TouchableOpacity>
-        
-                            <TouchableOpacity style={styles.fl}>
-                                <Text>628</Text>
-                                <Text style={styles.textgrey}>Followers</Text>
-                            </TouchableOpacity>
-        
-                            <TouchableOpacity style={styles.fl}>
-                                <Text>6031</Text>
-                                <Text style={styles.textgrey}>Like</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ flexDirection: 'row', marginTop: 15, alignItems: 'center', justifyContent: 'center'}}>
 
-                            <TouchableOpacity style={styles.fl}>
-                                <Image source={require('../assets/ProfileDetails/Button21.png')}/>
-                            </TouchableOpacity>
-        
-                            <TouchableOpacity style={styles.fl}>
-                                <Image source={require('../assets/ProfileDetails/Button20.png')}/>
-                            </TouchableOpacity>
+            <View style={styles.imgLogo}>
+                <Image style={{ height: 150, width: 150 }} source={{ uri: user.avatar }} />
+                <Text style={{ fontSize: 24, fontWeight: 'bold', paddingVertical: 10 }}>{user.username}</Text>
+            </View>
 
-                        </View>
-                        
-           <MyVideosTabView/>
-           <View style={[styles.suggest]}>
-    
-                            <TouchableOpacity style={styles.fl}>
-                                <Image source={require('../assets/ProfileDetails/Suggestedaccounts.png')}/>
-                            </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.fl}>
-                                <Image source={require('../assets/ProfileDetails/Viewmore.png')}/>
-                            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', marginTop: 0, alignItems: 'center', justifyContent: 'center' }}>
+                <TouchableOpacity style={styles.fl} onPress={() => navigation.navigate('Following', {user: user})}>
+                    <Text>{data.following_count || 0}</Text>
+                    <Text style={styles.textgrey}>Following</Text>
+                </TouchableOpacity>
 
-                        </View>
-                        <View style={{ flexDirection: 'row', marginTop: 0 }}>
-                            <TouchableOpacity style={styles.fl}>
-                                <Image source={require('../assets/ProfileDetails/Container83.png')}/>
-                            </TouchableOpacity>
-        
-                            <TouchableOpacity style={styles.fl}>
-                                <Image source={require('../assets/ProfileDetails/Container84.png')}/>
-                            </TouchableOpacity>
-        
-                            <TouchableOpacity style={styles.fl}>
-                                <Image source={require('../assets/ProfileDetails/Container85.png')}/>
-                            </TouchableOpacity>
-                        </View>
+                <TouchableOpacity style={styles.fl} onPress={() => navigation.navigate('Following', {user: user})}>
+                    <Text>{data.followers_count || 0}</Text >
+                    <Text style={styles.textgrey}>Followers</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.fl}>
+                    <Text>6031</Text>
+                    <Text style={styles.textgrey}>Like</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={{ flexDirection: 'row', marginTop: 15, alignItems: 'center', justifyContent: 'center' }}>
+
+                <TouchableOpacity style={styles.fl}>
+                    <Image source={require('../assets/ProfileDetails/Button21.png')} />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.fl}>
+                    <Image source={require('../assets/ProfileDetails/Button20.png')} />
+                </TouchableOpacity>
+
+            </View>
+
+            <MyVideosTabView id={user.idUser} />
+            <View style={[styles.suggest]}>
+
+                <TouchableOpacity style={styles.fl}>
+                    <Image source={require('../assets/ProfileDetails/Suggestedaccounts.png')} />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.fl}>
+                    <Image source={require('../assets/ProfileDetails/Viewmore.png')} />
+                </TouchableOpacity>
+
+            </View>
+            <View style={{ flexDirection: 'row', marginTop: 0 }}>
+                <TouchableOpacity style={styles.fl}>
+                    <Image source={require('../assets/ProfileDetails/Container83.png')} />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.fl}>
+                    <Image source={require('../assets/ProfileDetails/Container84.png')} />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.fl}>
+                    <Image source={require('../assets/ProfileDetails/Container85.png')} />
+                </TouchableOpacity>
+            </View>
 
         </View>
     );
@@ -188,7 +216,8 @@ const styles = StyleSheet.create({
         paddingBottom: 20
     }, imgLogo: {
         alignItems: 'center',
-        marginTop: 30,
+        marginTop: 10,
+        paddingBottom: 10
     }, fl: {
         paddingHorizontal: 15,
         alignItems: 'center',
@@ -202,10 +231,10 @@ const styles = StyleSheet.create({
     leftHead: {
         flexDirection: 'row',
         alignItems: 'center',
-    }, suggest : {
-        flexDirection: 'row', 
-        marginTop: 15 , 
-        justifyContent: 'space-between', 
+    }, suggest: {
+        flexDirection: 'row',
+        marginTop: 15,
+        justifyContent: 'space-between',
         padding: 10,
         alignItems: 'center',
         width: '100%',
@@ -215,13 +244,13 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'space-between',
         paddingHorizontal: 10
-    }, touchTabView : {
+    }, touchTabView: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 10
-    }, videoItem : {
+    }, videoItem: {
         width: widthScreen / 3,
-        padding: 15
+        padding: 15,
     }, scene: {
         flex: 1
     }, tabBar: {

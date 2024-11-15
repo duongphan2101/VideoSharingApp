@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, FlatList, TouchableOpacity, Image, useWindowDimensions, Modal,TextInput } from 'react-native';
+import { View, StyleSheet, Text, FlatList, TouchableOpacity, Image, useWindowDimensions, Modal, TextInput, Alert } from 'react-native';
 import { Video } from 'expo-av';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -14,12 +14,15 @@ export default function VideoStreaming({ navigation }) {
   const [videos, setVideos] = useState([]);
   const [comments, setComments] = useState([]);
   const [isCommentsVisible, setCommentsVisible] = useState(false);
+  const [currentVideoData, setCurrentVideoData] = useState({ likeCount: 0, commentCount: 0 });
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`http://192.168.1.151:3000/videoStreaming`);
       if (Array.isArray(response.data) && response.data.length > 0) {
         setVideos(response.data);
         setActivePostId(response.data[0].idPost);
+        updateCurrentVideoData(response.data[0].idPost);
       }
     } catch (error) {
       console.error("Error fetching video data:", error);
@@ -52,6 +55,9 @@ export default function VideoStreaming({ navigation }) {
       const newActivePostId = viewableItems[0].item.idPost;
       setActivePostId(newActivePostId);
 
+      // Cập nhật thông tin video hiện tại
+      updateCurrentVideoData(newActivePostId);
+
       videoRefs.current.forEach((video, index) => {
         if (video) {
           if (videos[index].idPost === newActivePostId) {
@@ -64,25 +70,23 @@ export default function VideoStreaming({ navigation }) {
     }
   };
 
-  const fetchComments = async (id) => {
+  const updateCurrentVideoData = async (idPost) => {
     try {
-      const response = await axios.get(`http://192.168.1.151:3000/comment?id=${id}`);
-      if (response.status === 200) {
-        setComments(response.data);
-        setCommentsVisible(true);
-      } else {
-        Alert.alert("Lỗi", "Không thể lấy bình luận. Vui lòng thử lại sau.");
-      }
+      const [likeResponse, commentResponse] = await Promise.all([
+        axios.get(`http://192.168.1.151:3000/LikeCount?id=${idPost}`),
+        axios.get(`http://192.168.1.151:3000/commentCount?id=${idPost}`),
+      ]);
+
+      setCurrentVideoData({
+        likeCount: likeResponse.data[0]?.like_count || 0,
+        commentCount: commentResponse.data[0]?.comment_count || 0,
+      });
     } catch (error) {
-      console.error("Error fetching comments:", error);
-      Alert.alert("Lỗi", "Đã có lỗi xảy ra trong quá trình lấy bình luận.");
+      console.error("Error updating video data:", error);
     }
   };
 
   const renderVideo = ({ item, index }) => (
-
-    
-
     <View style={[styles.videoContainer, { height }]}>
       <TouchableOpacity onPress={() => handlePlayPause(index)}>
         <Video
@@ -109,9 +113,15 @@ export default function VideoStreaming({ navigation }) {
             size={30}
             color={likedPosts[item.idPost] ? 'red' : 'white'}
           />
+          <Text style={styles.count}>
+            {item.idPost === activePosId ? currentVideoData.likeCount : 0}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => fetchComments(item.idPost)}>
           <Icon2 style={styles.iconRight} name="comment-o" size={30} color="white" />
+          <Text style={styles.count}>
+            {item.idPost === activePosId ? currentVideoData.commentCount : 0}
+          </Text>
         </TouchableOpacity>
         <Icon2 style={styles.iconRight} name="bookmark-o" size={30} color="white" />
       </View>
@@ -130,6 +140,21 @@ export default function VideoStreaming({ navigation }) {
       </View>
     </View>
   );
+
+  const fetchComments = async (idPost) => {
+    try {
+      const response = await axios.get(`http://192.168.1.151:3000/comment?id=${idPost}`);
+      if (response.status === 200) {
+        setComments(response.data);
+        setCommentsVisible(true);
+      } else {
+        Alert.alert("Lỗi", "Không thể lấy bình luận. Vui lòng thử lại sau.");
+      }
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      Alert.alert("Lỗi", "Đã có lỗi xảy ra trong quá trình lấy bình luận.");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -157,19 +182,18 @@ export default function VideoStreaming({ navigation }) {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Bình luận</Text>
             <TouchableOpacity>
-              <Icon3 style={styles.close} name='close' size={30} color='black' onPress={() => setCommentsVisible(false)}/>
+              <Icon3 style={styles.close} name='close' size={30} color='black' onPress={() => setCommentsVisible(false)} />
             </TouchableOpacity>
             <FlatList
               data={comments}
               keyExtractor={comment => comment.id}
               renderItem={({ item }) => (
-                <View  style={{flexDirection: 'row', padding: 5, alignItems: 'center', flex: 1, justifyContent: 'space-between'}}>
-
-                  <View style={{flexDirection: 'row',alignItems: 'center'}}>
-                    <Image source={{uri: item.avatar}} style={{height: 50, width: 50}}/>
-                    <View style={{paddingLeft: 10}}>
+                <View style={{ flexDirection: 'row', padding: 5, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Image source={{ uri: item.avatar }} style={{ height: 50, width: 50 }} />
+                    <View style={{ paddingLeft: 10 }}>
                       <Text style={styles.commentText}>{item.username}</Text>
-                      <Text style={{fontSize: 11, color: 'gray', marginTop: -8, marginBottom: 5}}>{item.time}</Text>
+                      <Text style={{ fontSize: 11, color: 'gray', marginTop: -8, marginBottom: 5 }}>{item.time}</Text>
                       <Text style={styles.commentText}>{item.text}</Text>
                     </View>
                   </View>
@@ -179,20 +203,16 @@ export default function VideoStreaming({ navigation }) {
                     color='gray'
                   />
                 </View>
-                
               )}
             />
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <TextInput
                 style={styles.input}
                 placeholder='Thêm bình luận...'
                 placeholderTextColor="#888"
-                // value={newComment}
-                // onChangeText={setNewComment}
               />
-              <Icon2 name="paper-plane" size={20} color="pink"/>
+              <Icon2 name="paper-plane" size={20} color="pink" />
             </View>
-            
           </View>
         </View>
       </Modal>
@@ -282,5 +302,12 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     right: 0,
     top: -40
-  }
+  },   count : {
+    color:'white'
+    , position: 'absolute'
+    , alignSelf: 'center',
+     backgroundColor: 'black',
+     bottom: 5,
+     fontSize: 18
+    }
 });

@@ -64,6 +64,50 @@ app.get('/follow', async (req, res) => {
   }
 });
 
+// API Endpoint để lấy danh sách da~ follow
+app.get('/followed', async (req, res) => {
+  let id = parseInt(req.query.id, 10); // Parse id to an integer
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid ID parameter. Must be a number." });
+  }
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('id', mssql.Int, id)
+      .query(`
+        select f.id_following, u.* from Follow f
+        inner join Users u on u.idUser=f.id_following
+        where f.id_followed = @id
+      `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching followed:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// API Endpoint để lấy danh sách da~ following
+app.get('/following', async (req, res) => {
+  let id = parseInt(req.query.id, 10); // Parse id to an integer
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid ID parameter. Must be a number." });
+  }
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('id', mssql.Int, id)
+      .query(`
+        select f.id_following, u.* from Follow f
+        inner join Users u on u.idUser=f.id_following
+        where f.id_followed = @id
+      `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching followed:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
 // Same fix applied to other routes
 app.get('/profilevideos', async (req, res) => {
   let id = parseInt(req.query.id, 10);
@@ -150,10 +194,57 @@ app.get('/comment', async (req, res) => {
     const result = await pool.request()
       .input('id', mssql.Int, parsedId)
       .query(`
-        select c.text, c.time, u.avatar, u.username from Comment c
+        select c.text, c.time, u.avatar, u.username
+        from Comment c
         inner join Post p on c.idPost = p.idPost 
         inner join Users u on u.idUser = c.idUser
-        where c.idPost = @id
+        where p.idPost = @id
+      `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching comments:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// API Endpoint để lấy số lượng comment cua 1 video
+app.get('/commentCount', async (req, res) => {
+  const { id } = req.query;
+  const parsedId = parseInt(id, 10);
+  if (isNaN(parsedId)) {
+    return res.status(400).send('Invalid id parameter');
+  }
+
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('id', mssql.Int, parsedId)
+      .query(`
+        SELECT COUNT(*) AS comment_count FROM Comment WHERE idPost = @id
+      `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching comments:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// API Endpoint để lấy số lượng Like cua 1 video
+app.get('/likeCount', async (req, res) => {
+  const { id } = req.query;
+  const parsedId = parseInt(id, 10);
+  if (isNaN(parsedId)) {
+    return res.status(400).send('Invalid id parameter');
+  }
+
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('id', mssql.Int, parsedId)
+      .query(`
+        		SELECT COUNT(*) AS like_count FROM [Like] WHERE idPost = @id;
       `);
 
     res.json(result.recordset);

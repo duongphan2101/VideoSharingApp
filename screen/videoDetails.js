@@ -16,16 +16,19 @@ export default function VideoStreaming({ navigation, route }) {
 
   const [videos, setVideos] = useState([]);
   const [comments, setComments] = useState([]);
+  const [count, setCount] = useState("");
+  const [likecount, setlikeCount] = useState("");
   const [isCommentsVisible, setCommentsVisible] = useState(false);
   const [newComment, setNewComment] = useState('');
   // const widthScreen = Dimensions.get('window').width;
-
   const fetchData = async () => {
     try {
       const response = await axios.get(`http://192.168.1.151:3000/videoDetails?id=${id}`);
       if (Array.isArray(response.data) && response.data.length > 0) {
         setVideos(response.data);
         setActivePostId(response.data[0].id);
+        fetchCommentCount();
+        fetchLikeCount();
       }
     } catch (error) {
       console.error("Error fetching video data:", error);
@@ -71,6 +74,37 @@ export default function VideoStreaming({ navigation, route }) {
     }
   };
 
+  const fetchCommentCount = async () => {
+    
+    try {
+      const response = await axios.get(`http://192.168.1.151:3000/commentCount?id=${id}`);
+      if (response.status === 200) {
+        setCount(response.data);
+      } else {
+        Alert.alert("Lỗi", "Không thể lấy bình luận. Vui lòng thử lại sau.");
+      }
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      Alert.alert("Lỗi", "Đã có lỗi xảy ra trong quá trình lấy bình luận.");
+    }
+  };
+
+  
+  const fetchLikeCount = async () => {
+    
+    try {
+      const response = await axios.get(`http://192.168.1.151:3000/LikeCount?id=${id}`);
+      if (response.status === 200) {
+        setlikeCount(response.data);
+      } else {
+        Alert.alert("Lỗi", "Không thể lấy bình luận. Vui lòng thử lại sau.");
+      }
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      Alert.alert("Lỗi", "Đã có lỗi xảy ra trong quá trình lấy bình luận.");
+    }
+  };
+
   // const handleAddComment = () => {
   //   const newCommentData = { id: Date.now().toString(), text: newComment };
   //   setComments([...comments, newCommentData]); // Add the new comment
@@ -102,9 +136,12 @@ export default function VideoStreaming({ navigation, route }) {
             size={30}
             color={likedPosts[item.idPost] ? 'red' : 'white'}
           />
+          <Text style={styles.count}>{likecount[0]?.like_count || 0}</Text>
+
         </TouchableOpacity>
         <TouchableOpacity onPress={() => fetchComments(item.idPost)}> {/* Show comments modal */}
           <Icon2 style={styles.iconRight} name="comment-o" size={30} color="white" />
+          <Text style={styles.count}>{count[0]?.comment_count || 0}</Text>
         </TouchableOpacity>
         <Icon2 style={styles.iconRight} name="bookmark-o" size={30} color="white" />
       </View>
@@ -269,5 +306,14 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     right: 0,
     top: -40
-  }
+  },
+  count : {
+    color:'white'
+    , position: 'absolute'
+    , alignSelf: 'center',
+     backgroundColor: 'black',
+     bottom: 5,
+     fontSize: 18
+    }
+
 });

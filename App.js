@@ -23,7 +23,7 @@ import { TouchableOpacity } from 'react-native';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function TabNavigator({route}) {
+function TabNavigator({navigation, route}) {
   const { userData } = route.params;
   return (
     <Tab.Navigator initialRouteName='Home' screenOptions={{
@@ -79,7 +79,7 @@ function TabNavigator({route}) {
           header: () => (
             <View style={styles.headerProflieContainer}>
                 <View style={{ flexDirection: 'row' }}>
-                    <Icon2 style={{ paddingHorizontal: 10 }} name="navicon" size={20} color="black" />
+                    <Icon2 style={{ paddingHorizontal: 10 }} name="navicon" size={20} color="black" onPress={()=> navigation.navigate('Login')}/>
                     <Icon2 style={{ paddingHorizontal: 10 }} name="user-plus" size={20} color="black" />
                 </View>
                 <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>

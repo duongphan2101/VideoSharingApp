@@ -3,6 +3,7 @@ import { Dimensions, FlatList, TouchableOpacity, StyleSheet, Text, View, Image }
 import axios from 'axios';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useNavigation } from '@react-navigation/native';
+
 const MyVideos = ({ id }) => {
     const [videos, setVideos] = useState([]);
     const navigation = useNavigation();
@@ -22,7 +23,7 @@ const MyVideos = ({ id }) => {
         fetchData(id); 
       }
     }, [id]);
-  
+
     return (
       <FlatList
         data={videos}
@@ -31,7 +32,6 @@ const MyVideos = ({ id }) => {
           <TouchableOpacity style={styles.videoItem} onPress={()=> navigation.navigate('VideoDetails', {idPost: item.idPost, idUser: item.idUser, avatar: item.avatar})}>
             <Image style={{height: '100%', width: '100%', borderRadius: 10}} 
                 source={{uri : 'https://pngmagic.com/product_images/black-background-for-youtube-thumbnail.jpg'}}/>
-            {/* <Text style={{color: 'white'}}>{item.url}</Text> */}
           </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}
@@ -156,12 +156,12 @@ export default function App({ navigation, route }) {
         <Image style={{ height: 150, width: 150 }} source={{ uri: user.avatar }} />
         <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{user.username}</Text>
         <View style={{ flexDirection: 'row', marginTop: 20 }}>
-          <TouchableOpacity style={styles.fl} onPress={() => navigation.navigate('Following')}>
+          <TouchableOpacity style={styles.fl} onPress={() => navigation.navigate('Following', {user: user})}>
             <Text>{data.following_count || 0}</Text>
             <Text style={styles.textgrey}>Following</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.fl} onPress={() => navigation.navigate('Following')}>
+          <TouchableOpacity style={styles.fl} onPress={() => navigation.navigate('Following', {user: user})}>
             <Text>{data.followers_count || 0}</Text>
             <Text style={styles.textgrey}>Followers</Text>
           </TouchableOpacity>

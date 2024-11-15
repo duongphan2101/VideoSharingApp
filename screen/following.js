@@ -2,23 +2,39 @@ import { Alert, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { useState } from 'react';
-import profileDetails from './profiledetails'
+import { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-
-const MyVideos = () => {
+import axios from 'axios';
+const MyVideos = ({idUser}) => {
     const navigation = useNavigation();
-    const click = ({id}) => {
-        navigation.navigate('ProfileDetails', {userID: id});
+    const [followed, setFollowed] = useState([]);
+    const click = ({user}) => {
+        navigation.navigate('ProfileDetails', {user: user});
     }
+    const fetchData = async () => {
+        try {
+          const response = await axios.get(`http://192.168.1.151:3000/followed?id=${idUser}`);
+          if (Array.isArray(response.data) && response.data.length > 0) {
+            setFollowed(response.data);
+          }
+        } catch (error) {
+          console.error("Lỗi khi lấy dữ liệu:", error);
+        }
+      }
+    
+      useEffect(() => {
+        if (idUser) {
+          fetchData(idUser); 
+        }
+      }, [idUser]);
     return (
         <FlatList
-            data={dataFollowing}
+            data={followed}
             renderItem={({item}) => (
-                <TouchableOpacity style={styles.cardPeople} onPress={() => click({id: item.id})}>
+                <TouchableOpacity style={styles.cardPeople} onPress={() => click({user: item})}>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <Image source={item.image} style={{height: 50, width: 50}}/>
-                        <Text style={{marginLeft: 10}}>{item.name}</Text>
+                        <Image source={{uri: item.avatar}} style={{height: 50, width: 50}}/>
+                        <Text style={{marginLeft: 20, fontSize: 20}}>{item.username}</Text>
                     </View>
                     <View style={{borderWidth: .3, borderColor: 'black', padding: 10, borderRadius: 10}}>
                         <Text>Following</Text>
@@ -31,19 +47,36 @@ const MyVideos = () => {
     );
 };
 
-const MyImages = () => {
+const MyImages = ({idUser}) => {
     const navigation = useNavigation();
-    const click = ({id}) => {
-        navigation.navigate('ProfileDetails', {userID: id});
+    const [followed, setFollowed] = useState([]);
+    const click = ({user}) => {
+        navigation.navigate('ProfileDetails', {user: user});
     }
+    const fetchData = async () => {
+        try {
+          const response = await axios.get(`http://192.168.1.151:3000/following?id=${idUser}`);
+          if (Array.isArray(response.data) && response.data.length > 0) {
+            setFollowed(response.data);
+          }
+        } catch (error) {
+          console.error("Lỗi khi lấy dữ liệu:", error);
+        }
+      }
+    
+      useEffect(() => {
+        if (idUser) {
+          fetchData(idUser); 
+        }
+      }, [idUser]);
     return (
         <FlatList
-            data={dataFollowing}
+            data={followed}
             renderItem={({item}) => (
-                <TouchableOpacity style={styles.cardPeople} onPress={() => click({id: item.id})}>
+                <TouchableOpacity style={styles.cardPeople} onPress={() => click({user: item})}>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <Image source={item.image} style={{height: 50, width: 50}}/>
-                        <Text style={{marginLeft: 10}}>{item.name}</Text>
+                        <Image source={{uri: item.avatar}} style={{height: 50, width: 50}}/>
+                        <Text style={{marginLeft: 20, fontSize: 20}}>{item.username}</Text>
                     </View>
                     <View style={{borderWidth: .3, borderColor: 'black', padding: 10, borderRadius: 10}}>
                         <Text>Following</Text>
@@ -58,16 +91,16 @@ const MyImages = () => {
 
 const widthScreen = Dimensions.get('window').width;
 
-const MyVideosTabView = ({navigation}) => {
+const MyVideosTabView = ({user, navigation}) => {
     const [index, setIndex] = useState(0);
     const [routes] = useState([
-        { key: 'videos', title: '368 followers' },
-        { key: 'images', title: '456 following' },
+        { key: 'videos', title: 'Đã Follow' },
+        { key: 'images', title: 'Follower' },
     ]);
 
     const renderScene = SceneMap({
-        videos: () => <MyVideos navigation={navigation} />,
-        images: () => <MyImages navigation={navigation} />,
+        videos: () => <MyVideos navigation={navigation} idUser = {user.idUser} />,
+        images: () => <MyImages navigation={navigation} idUser = {user.idUser}/>,
     });
 
     const renderTabBar = props => (
@@ -108,21 +141,22 @@ const dataGoiY = [
     { id: '5', name : 'Kristin Watson', image: require('../assets/Follow/Avatar34.png')},
   ];
 
-export default function App({ navigation }) {
+export default function App({ navigation, route }) {
+    const user = route.params.user;
     return (
         <View style={styles.container}>
             <View style={styles.head}>
                 <View style={styles.leftHead}>
                     <Icon2 name='angle-left' size={30} color='black' onPress={() => navigation.goBack()}/>
-                    <Image style={{ height: 50, width: 50, marginHorizontal: 10 }} source={require('../assets/MyProfile/Container71.png')}/>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Ruth Sanders</Text>
+                    <Image style={{ height: 50, width: 50, marginHorizontal: 10 }} source={{uri: user.avatar}}/>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{user.username}</Text>
                 </View>
                 <View style={styles.leftHead}>
                     <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='search' size={20} color='black'/></TouchableOpacity>
                     <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='bars' size={20} color='black'/></TouchableOpacity>
                 </View>
             </View>
-            <MyVideosTabView/>
+            <MyVideosTabView user={user}/>
             <View style={{marginBottom: 20, height: 300}}>
                 <Text style={{backgroundColor: '#E8E8E8', padding: 10}}>Suggestion for you</Text>
                 <FlatList
@@ -189,6 +223,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '100%',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     }
 });
