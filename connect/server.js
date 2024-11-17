@@ -8,21 +8,21 @@ app.use(express.json());
 
 // Cấu hình kết nối với MSSQL
 const config = {
-  user: 'sa',         // Tên người dùng
-  password: '123',     // Mật khẩu
-  server: 'localhost', // Máy chủ SQL
-  database: 'db_videosharingapp', // Tên cơ sở dữ liệu
+  user: 'sa',
+  password: '123',
+  server: 'localhost',
+  database: 'db_videosharingapp',
   options: {
-    encrypt: true, // Đảm bảo mã hóa kết nối
-    trustServerCertificate: true // Dùng nếu không sử dụng chứng chỉ
-  }
+    encrypt: true,
+    trustServerCertificate: true,
+  },
 };
+
 
 // Kết nối MSSQL
 mssql.connect(config)
   .then(pool => {
     console.log('Connected to MSSQL');
-    // Đảm bảo connection pool sẵn sàng
     app.locals.db = pool;
   })
   .catch(err => {
@@ -168,6 +168,40 @@ app.get('/videoStreaming', async (req, res) => {
   }
 });
 
+app.get('/imageStreaming4', async (req, res) => {
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .query(`
+        SELECT top 4 * FROM Post p 
+        INNER JOIN Users u ON p.idUser = u.idUser
+        where p.type = 'image'
+        ORDER BY p.idPost DESC;
+      `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching video details:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+app.get('/imageStreaming', async (req, res) => {
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .query(`
+        SELECT * FROM Post p 
+        INNER JOIN Users u ON p.idUser = u.idUser
+        where p.type = 'image'
+        ORDER BY p.idPost DESC;
+      `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching video details:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
 
 // API Endpoint để lấy danh sách video in profile
 app.get('/profilevideos', async (req, res) => {
@@ -220,7 +254,7 @@ app.get('/comment', async (req, res) => {
         from Comment c
         inner join Post p on c.idPost = p.idPost 
         inner join Users u on u.idUser = c.idUser
-        where p.idPost = @id
+        where p.idPost = @id ORDER BY p.idPost DESC
       `);
 
     res.json(result.recordset);
@@ -345,6 +379,32 @@ app.put('/updateProfile', async (req, res) => {
   } catch (error) {
     console.error('Error updating profile:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Endpoint để lưu bài viết mới
+app.post('/insertComment', async (req, res) => {
+  const { idPost, idUser, text } = req.body;
+
+  if (!idUser || !idPost || !text ) {
+    return res.status(400).json({ error: 'Vui lòng cung cấp idUser, idPost và text.' });
+  }
+
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('idUser', mssql.Int, idUser)
+      .input('idPost', mssql.Int, idPost)
+      .input('text', mssql.NVarChar, text)
+      .query(`
+        INSERT INTO dbo.Comment (idUser, idPost, text, time)
+        VALUES (@idUser, @idPost, @text, GETDATE())
+      `);
+
+    res.status(201).json({ message: 'Bình luận thành công!' });
+  } catch (error) {
+    console.error("Lỗi cơ sở dữ liệu:", error);
+    res.status(500).json({ error: 'Lỗi khi thêm bình luận vào cơ sở dữ liệu.' });
   }
 });
 

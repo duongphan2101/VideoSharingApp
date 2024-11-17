@@ -3,8 +3,6 @@ import { Image, View, Text, Alert, Modal,StyleSheet, FlatList } from 'react-nati
 import { Video } from 'expo-av';
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity } from 'react-native';
-import Icon from '@expo/vector-icons/Entypo'
-import Fontisto from '@expo/vector-icons/Fontisto';
 import { Ionicons } from "@expo/vector-icons";
 
 export default function MediaPickerExample({ navigation, route }) {

@@ -13,7 +13,7 @@ const MyVideos = ({idUser}) => {
     }
     const fetchData = async () => {
         try {
-          const response = await axios.get(`http://192.168.1.151:3000/followed?id=${idUser}`);
+          const response = await axios.get(`http://192.168.1.5:3000/followed?id=${idUser}`);
           if (Array.isArray(response.data) && response.data.length > 0) {
             setFollowed(response.data);
           }
@@ -55,7 +55,7 @@ const MyImages = ({idUser}) => {
     }
     const fetchData = async () => {
         try {
-          const response = await axios.get(`http://192.168.1.151:3000/following?id=${idUser}`);
+          const response = await axios.get(`http://192.168.1.5:3000/following?id=${idUser}`);
           if (Array.isArray(response.data) && response.data.length > 0) {
             setFollowed(response.data);
           }

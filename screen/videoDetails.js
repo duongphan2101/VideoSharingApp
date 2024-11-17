@@ -23,7 +23,7 @@ export default function VideoStreaming({ navigation, route }) {
   // const widthScreen = Dimensions.get('window').width;
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.151:3000/videoDetails?id=${id}`);
+      const response = await axios.get(`http://192.168.1.5:3000/videoDetails?id=${id}`);
       if (Array.isArray(response.data) && response.data.length > 0) {
         setVideos(response.data);
         setActivePostId(response.data[0].id);
@@ -61,10 +61,10 @@ export default function VideoStreaming({ navigation, route }) {
   const fetchComments = async () => {
 
     try {
-      const response = await axios.get(`http://192.168.1.151:3000/comment?id=${id}`);
+      const response = await axios.get(`http://192.168.1.5:3000/comment?id=${id}`);
       if (response.status === 200) {
         setComments(response.data);
-        setCommentsVisible(true); // Show the modal
+        setCommentsVisible(true);
       } else {
         Alert.alert("Lỗi", "Không thể lấy bình luận. Vui lòng thử lại sau.");
       }
@@ -77,7 +77,7 @@ export default function VideoStreaming({ navigation, route }) {
   const fetchCommentCount = async () => {
 
     try {
-      const response = await axios.get(`http://192.168.1.151:3000/commentCount?id=${id}`);
+      const response = await axios.get(`http://192.168.1.5:3000/commentCount?id=${id}`);
       if (response.status === 200) {
         setCount(response.data);
       } else {
@@ -93,7 +93,7 @@ export default function VideoStreaming({ navigation, route }) {
   const fetchLikeCount = async () => {
 
     try {
-      const response = await axios.get(`http://192.168.1.151:3000/LikeCount?id=${id}`);
+      const response = await axios.get(`http://192.168.1.5:3000/LikeCount?id=${id}`);
       if (response.status === 200) {
         setlikeCount(response.data);
       } else {
@@ -195,7 +195,7 @@ export default function VideoStreaming({ navigation, route }) {
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Image source={{ uri: item.avatar }} style={{ height: 50, width: 50, borderRadius: 50 }} />
                     <View style={{ paddingLeft: 10 }}>
-                      <Text style={styles.commentText}>{item.username}</Text>
+                      <Text style={[styles.commentText, {fontWeight: 'bold'}]}>{item.username}</Text>
                       <Text style={{ fontSize: 11, color: 'gray', marginTop: -8, marginBottom: 5 }}>{item.time}</Text>
                       <Text style={styles.commentText}>{item.text}</Text>
                     </View>

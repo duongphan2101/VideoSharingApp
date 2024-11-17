@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import Icon3 from 'react-native-vector-icons/EvilIcons';
 
-export default function VideoStreaming({ navigation }) {
+export default function VideoStreaming({ navigation, route }) {
   const videoRefs = useRef([]);
   const [activePosId, setActivePostId] = useState(null);
   const { height } = useWindowDimensions();
@@ -16,9 +16,10 @@ export default function VideoStreaming({ navigation }) {
   const [isCommentsVisible, setCommentsVisible] = useState(false);
   const [currentVideoData, setCurrentVideoData] = useState({ likeCount: 0, commentCount: 0 });
 
+  const user = route.params.userData;
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.151:3000/videoStreaming`);
+      const response = await axios.get(`http://192.168.1.5:3000/videoStreaming`);
       if (Array.isArray(response.data) && response.data.length > 0) {
         setVideos(response.data);
         setActivePostId(response.data[0].idPost);
@@ -73,8 +74,8 @@ export default function VideoStreaming({ navigation }) {
   const updateCurrentVideoData = async (idPost) => {
     try {
       const [likeResponse, commentResponse] = await Promise.all([
-        axios.get(`http://192.168.1.151:3000/LikeCount?id=${idPost}`),
-        axios.get(`http://192.168.1.151:3000/commentCount?id=${idPost}`),
+        axios.get(`http://192.168.1.5:3000/LikeCount?id=${idPost}`),
+        axios.get(`http://192.168.1.5:3000/commentCount?id=${idPost}`),
       ]);
 
       setCurrentVideoData({
@@ -99,7 +100,7 @@ export default function VideoStreaming({ navigation }) {
         />
       </TouchableOpacity>
       <View style={styles.boxIcon}>
-        <TouchableOpacity onPress={()=> navigation.navigate('ProfileDetails', {user: item})}>
+        <TouchableOpacity onPress={() => navigation.navigate('ProfileDetails', { user: item })}>
           <Image
             style={{ height: 50, width: 50, borderRadius: 50, marginBottom: 10 }}
             source={{ uri: item.avatar }}
@@ -143,7 +144,7 @@ export default function VideoStreaming({ navigation }) {
 
   const fetchComments = async (idPost) => {
     try {
-      const response = await axios.get(`http://192.168.1.151:3000/comment?id=${idPost}`);
+      const response = await axios.get(`http://192.168.1.5:3000/comment?id=${idPost}`);
       if (response.status === 200) {
         setComments(response.data);
         setCommentsVisible(true);
@@ -155,6 +156,33 @@ export default function VideoStreaming({ navigation }) {
       Alert.alert("Lỗi", "Đã có lỗi xảy ra trong quá trình lấy bình luận.");
     }
   };
+
+  const insertComment = async (idUser, idPost, text, navigation) => {
+    try {
+      const response = await axios.post('http://192.168.1.5:3000/insertComment', {
+        idUser,
+        idPost,
+        text,
+      });
+
+      if (response.status === 201) {
+        Alert.alert("Thành công", "Đã bình luận thành công!");
+        fetchComments(idPost);
+        setNewComment("");
+      } else {
+        Alert.alert("Lỗi", "Đã xảy ra lỗi khi bình luận vào cơ sở dữ liệu.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+      Alert.alert("Lỗi", "Không thể kết nối tới máy chủ.");
+    }
+  };
+
+  const BL = ({ idPost, text }) => {
+    insertComment(user.idUser, idPost, text)
+  }
+
+  const [newComment, setNewComment] = useState("");
 
   return (
     <View style={styles.container}>
@@ -176,7 +204,11 @@ export default function VideoStreaming({ navigation }) {
         animationType="slide"
         transparent={true}
         visible={isCommentsVisible}
-        onRequestClose={() => setCommentsVisible(false)}
+        onRequestClose={() => {
+          setCommentsVisible(false);
+          setNewComment("")
+        }
+        }
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -184,6 +216,18 @@ export default function VideoStreaming({ navigation }) {
             <TouchableOpacity>
               <Icon3 style={styles.close} name='close' size={30} color='black' onPress={() => setCommentsVisible(false)} />
             </TouchableOpacity>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TextInput
+                style={styles.input}
+                placeholder='Thêm bình luận...'
+                placeholderTextColor="#888"
+                value={newComment}
+                onChangeText={setNewComment}
+              />
+              <Icon2 name="paper-plane" size={20} color="pink" onPress={() => BL({ idPost: activePosId, text: newComment })} />
+            </View>
+
             <FlatList
               data={comments}
               keyExtractor={comment => comment.id}
@@ -192,7 +236,7 @@ export default function VideoStreaming({ navigation }) {
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Image source={{ uri: item.avatar }} style={{ height: 50, width: 50, borderRadius: 50 }} />
                     <View style={{ paddingLeft: 10 }}>
-                      <Text style={styles.commentText}>{item.username}</Text>
+                      <Text style={[styles.commentText, { fontWeight: 'bold' }]}>{item.username}</Text>
                       <Text style={{ fontSize: 11, color: 'gray', marginTop: -8, marginBottom: 5 }}>{item.time}</Text>
                       <Text style={styles.commentText}>{item.text}</Text>
                     </View>
@@ -205,14 +249,7 @@ export default function VideoStreaming({ navigation }) {
                 </View>
               )}
             />
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TextInput
-                style={styles.input}
-                placeholder='Thêm bình luận...'
-                placeholderTextColor="#888"
-              />
-              <Icon2 name="paper-plane" size={20} color="pink" />
-            </View>
+
           </View>
         </View>
       </Modal>
@@ -252,7 +289,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 60,
     left: 20,
-  },  boxName: {
+  }, boxName: {
     position: 'absolute',
     bottom: 80,
     left: 20,
@@ -291,23 +328,23 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    paddingHorizontal: 8, 
+    paddingHorizontal: 8,
     flex: 1,
     backgroundColor: '#eee',
     borderRadius: 10,
     marginBottom: 10,
     marginRight: 10
   },
-  close : {
-    position: 'absolute', 
+  close: {
+    position: 'absolute',
     right: 0,
     top: -40
-  },   count : {
-    color:'white'
+  }, count: {
+    color: 'white'
     , position: 'absolute'
     , alignSelf: 'center',
-     backgroundColor: 'black',
-     bottom: 5,
-     fontSize: 18
-    }
+    backgroundColor: 'black',
+    bottom: 5,
+    fontSize: 18
+  }
 });

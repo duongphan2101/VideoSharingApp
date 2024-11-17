@@ -12,6 +12,7 @@ import FriendsScreen from './screen/friends.js';
 import ProfileScreen from './screen/profile.js';
 import videoStreaming from './screen/videoStreaming.js';
 import login from './screen/Login.js'
+import Register from './screen/Register.js'
 import post from './screen/Post_Video_Screen.js';
 import plus from './screen/Create_Video.js';
 import Following from './screen/following.js';
@@ -19,6 +20,7 @@ import profileDetails from './screen/profiledetails.js';
 import videoDetails from './screen/videoDetails.js';
 import editProfile from './screen/EditProfile.js';
 import ImageView from './screen/ImageView.js';
+import ImageStreaming from './screen/imageStreaming.js';
 import { TouchableOpacity } from 'react-native';
 
 const Stack = createStackNavigator();
@@ -106,6 +108,12 @@ export default function App() {
             options={{
               headerShown: false}}
           />
+          <Stack.Screen 
+            name='Register' 
+            component={Register}
+            options={{
+              headerShown: false}}
+          />
         <Stack.Screen 
             name='VideoSharingApp' 
             component={TabNavigator}
@@ -155,6 +163,13 @@ export default function App() {
             options={{
               headerTitle:""
             }}
+        />
+        <Stack.Screen 
+            name='New Fist' 
+            component={ImageStreaming}
+            // options={{
+            //   headerTitle:""
+            // }}
         />
       </Stack.Navigator>
     </NavigationContainer>

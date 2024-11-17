@@ -3,6 +3,7 @@ import axios from 'axios';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import { useState, useEffect } from 'react';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Fontisto from '@expo/vector-icons/Fontisto';
 
 export default function App({navigation}) {
   const [data, setData] = useState([]);
@@ -35,10 +36,10 @@ export default function App({navigation}) {
     <ImageBackground source={require('../assets/bgL.png')} resizeMode='contain' style={styles.container}>
       <View style={styles.overlay}>
         <View style={styles.logo}>
-          <Text style={{color: 'pink', fontSize: 32, fontWeight: 'bold'}}>Welcome Back!</Text>
+          <Text style={{color: 'pink', fontSize: 32, fontWeight: 'bold'}}>Nice to meet you!</Text>
         </View>
         <View style={styles.viewInput}>
-          <View style={styles.input}>
+          <View style={[{width: '50%'},styles.input]}>
             <Icon name='user' size={30} color={'pink'}/>
             <TextInput 
               style={styles.textInput} 
@@ -48,7 +49,7 @@ export default function App({navigation}) {
               onChangeText={setUser}
             />
           </View>
-          <View style={styles.input}>
+          <View style={[{width: '48%'},styles.input]}>
             <Icon name='lock' size={30} color={'pink'}/>
             <TextInput 
               style={styles.textInput} 
@@ -59,21 +60,71 @@ export default function App({navigation}) {
               onChangeText={setPass}
             />
           </View>
+        </View>
+        <View style={styles.viewInput}>
+          <View style={[{width: '100%'},styles.input]}>
+            <AntDesign name="user" size={20} color="pink" />
+            <TextInput 
+              style={styles.textInput} 
+              placeholder='Your name' 
+              placeholderTextColor={'pink'} 
+              // value={user} 
+              // onChangeText={setUser}
+            />
+          </View>
+          
+        </View>
+
+        <View style={styles.viewInput}>
+          <View style={[{width: '100%'},styles.input]}>
+            <Fontisto name="email" size={24} color="pink" />
+            <TextInput 
+              style={styles.textInput} 
+              placeholder='Your email' 
+              placeholderTextColor={'pink'} 
+              // value={user} 
+              // onChangeText={setUser}
+            />
+            <TextInput 
+              style={styles.textInput} 
+              placeholder='Your email' 
+              placeholderTextColor={'pink'} 
+              value='@gmail.com' 
+              editable={false}
+            />
+          </View>
+          
+        </View>
+
+        <View style={styles.viewInput}>
+          <View style={[{width: '100%'},styles.input]}>
+            <AntDesign name="phone" size={20} color="pink" />
+            <TextInput 
+              style={styles.textInput} 
+              placeholder='Your Phone' 
+              placeholderTextColor={'pink'} 
+              // value={user} 
+              // onChangeText={setUser}
+            />
+          </View>
+          
+        </View>
 
           <TouchableOpacity style={styles.Touch} onPress={handleLogin}>
-            <Text style={{fontSize: 24, fontWeight: 'bold', color: 'white'}}>Login</Text>
+            <Text style={{fontSize: 24, fontWeight: 'bold', color: 'white'}}>Register</Text>
           </TouchableOpacity>
 
           <View style={styles.hr}/>
 
           {/* Uncomment the following if you need a Register option */}
           
-          <TouchableOpacity style={{alignSelf: 'flex-end', flexDirection: 'row'}} onPress={()=> navigation.navigate('Register')}>
-            <Text style={{fontSize: 13, color: 'white'}}>Register</Text>
-            <AntDesign name="arrowright" size={16} color="white" style={{alignSelf: 'center', paddingHorizontal: 10}}/>
+          <TouchableOpacity style={{alignItems: 'flex-start', flexDirection: 'row', paddingHorizontal: 20, width: '100%'}} onPress={()=> navigation.navigate('Login')}>
+          <AntDesign name="arrowleft" size={16} color="white" style={{alignSelf: 'center', paddingHorizontal: 10}}/>
+            <Text style={{fontSize: 13, color: 'white'}}>Login</Text>
+
           </TouchableOpacity>
          
-        </View>
+          <Text style={{fontSize: 11, color: 'white', position: 'absolute', bottom: 10, alignSelf: 'center'}}>Cre: PN2D2101</Text>
       </View>
     </ImageBackground>
   );
@@ -87,7 +138,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center', 
     alignItems: 'center', 
-    padding: 20, 
+    padding: 10, 
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderRadius: 10,
   },
@@ -95,9 +146,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   viewInput: {
-    paddingVertical: 20,
-    paddingHorizontal: 10,
+    padding: 10,
     width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   input: {
     borderColor: 'pink',
@@ -105,7 +157,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 10,
     flexDirection: 'row',
-    marginVertical: 10,
     color: 'pink',
   },
   textInput: {
@@ -120,6 +171,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 30,
     borderRadius: 15,
+    width: '100%',
+    marginHorizontal: 20
   },
   hr: {
     width: '100%',

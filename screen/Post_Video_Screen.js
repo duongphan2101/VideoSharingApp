@@ -9,9 +9,10 @@ import axios from 'axios';
 const Post_Video_Screen = ({ navigation, route }) => {
   const { media, mediaType, user } = route.params;
   const [content, setContent] = useState("");
+  
   const postMedia = async (idUser, type, url, navigation) => {
     try {
-      const response = await axios.post('http://192.168.1.151:3000/savePost', {
+      const response = await axios.post('http://192.168.1.5:3000/savePost', {
         idUser,
         type,
         url,

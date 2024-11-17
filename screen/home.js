@@ -1,27 +1,20 @@
 import { TouchableOpacity } from 'react-native';
 import { SafeAreaView, StyleSheet, Text, View, Image, ScrollView, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useState, useEffect } from 'react';
+import { Video } from 'expo-av';
+import axios from 'axios';
+
 const dataTopTrending = [
   { id: '1', image: require('../assets/Home_Video_Listing/Container3.png'), marginLeft: -10 },
   { id: '2', image: require('../assets/Home_Video_Listing/Container15.png'), marginLeft: 0 },
   { id: '3', image: require('../assets/Home_Video_Listing/Container16.png'), marginLeft: 0 },
 ];
-
-
 const dataStreaming = [
   { id: '1', image: require('../assets/Home_Video_Listing/Container11.png'), marginLeft: -10 },
   { id: '2', image: require('../assets/Home_Video_Listing/Container32.png'), marginLeft: 0 },
   { id: '3', image: require('../assets/Home_Video_Listing/Container34.png'), marginLeft: 0 },
 ];
-
-const dataNav = [
-  { id: '1', name: 'film', title: 'Home', marginLeft: -10, color: 'pink', size: 20},
-  { id: '2', name: 'check', title: 'Search', marginLeft: 0, color: 'grey', size: 20},
-  { id: '3', name: 'plus', title: '', marginLeft: 0, color: 'pink', size: 30},
-  { id: '4', name: 'list', title: 'Friends', marginLeft: 0, color: 'grey', size: 20},
-  { id: '5', name: 'user', title: 'My Profile', marginLeft: 0, color: 'grey', size: 20},
-];
-
 const dataAudio = [
   { 
     id: '1', 
@@ -53,8 +46,26 @@ const dataAudio = [
 ];
 
 
+
 export default function App({ navigation, route }) {
     const user  = route.params.userData;
+    const [images, setImages] = useState([]);
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://192.168.1.5:3000/imageStreaming4`);
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setImages(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching video data:", error);
+      }
+    };
+
+    useEffect(() => {
+      fetchData();
+    }, []);
+
     const dataStories = [
       { id: '1', containerImage: {uri: user.avatar}, userImage: require('../assets/Home_Video_Listing/You.png') },
       { id: '2', containerImage: require('../assets/Home_Video_Listing/Container17.png'), userImage: require('../assets/Home_Video_Listing/Adam.png') },
@@ -73,7 +84,7 @@ export default function App({ navigation, route }) {
 
   // Hàm renderItem
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={[styles.padTouch, { marginLeft: item.marginLeft }]} onPress={()=>navigation.navigate('VideoStreaming')}>
+    <TouchableOpacity style={[styles.padTouch, { marginLeft: item.marginLeft }]} onPress={()=>navigation.navigate('VideoStreaming', {userData: user})}>
       <Image source={item.image} />
     </TouchableOpacity>
   );
@@ -87,11 +98,11 @@ export default function App({ navigation, route }) {
       </TouchableOpacity>
     );
 
-      // Hàm renderIcon
-  const renderIcon = ({ item }) => (
-    <TouchableOpacity style={ {marginLeft: item.marginLeft }}>
-       <Icon name={item.name} size={item.size} color={item.color}/>
-       <Text style={{ color: item.color }}>{item.title}</Text>
+      // Hàm renderAnh
+  const renderAnh = ({ item }) => (
+    <TouchableOpacity style={{padding: 10}} onPress={()=> {navigation.navigate('New Fist')}}>
+       <Image style={{height: 120, width: 100, borderRadius: 10, resizeMode: 'contain'}} source={{uri : item.url}}/>
+       <Text style={{marginTop: 10, alignSelf: 'center'}}>{item.content}</Text>
     </TouchableOpacity>
   );
   return (
@@ -112,7 +123,7 @@ export default function App({ navigation, route }) {
     <SafeAreaView style={{ marginTop: 15,marginBottom: 20 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Top trending</Text>
-        <TouchableOpacity onPress={()=>navigation.navigate('VideoStreaming')}>
+        <TouchableOpacity onPress={()=>navigation.navigate('VideoStreaming', {userData: user})}>
           <Image source={require('../assets/Home_Video_Listing/Button1.png')}/>
         </TouchableOpacity>
       </View>
@@ -163,15 +174,15 @@ export default function App({ navigation, route }) {
     {/* Streaming Section */}
     <SafeAreaView style={{ marginTop: 20, marginBottom: 20}}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Streaming</Text>
-        <TouchableOpacity>
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Images</Text>
+        <TouchableOpacity onPress={()=> {navigation.navigate('New Fist')}}>
           <Image source={require('../assets/Home_Video_Listing/Button1.png')} />
         </TouchableOpacity>
       </View>
 
       <FlatList
-        data={dataStreaming}
-        renderItem={renderItem}
+        data={images}
+        renderItem={renderAnh}
         keyExtractor={item => item.id}
         horizontal={true}
         showsHorizontalScrollIndicator={false}

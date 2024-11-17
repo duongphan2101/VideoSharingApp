@@ -21,7 +21,7 @@ const data = [
 const widthScreen = Dimensions.get('window').width;
 export default function App({ navigation }) {
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.container} showsVerticalScrollIndicator={false}>
 
             <View style={styles.head}>
                 <View style={styles.input}>
@@ -90,7 +90,7 @@ export default function App({ navigation }) {
 
             </View>
 
-        </ScrollView>
+        </View>
     );
 }
 

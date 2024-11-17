@@ -9,7 +9,7 @@ const MyVideos = ({ id }) => {
     const navigation = useNavigation();
     const fetchData = async (id) => {
       try {
-        const response = await axios.get(`http://192.168.1.151:3000/profilevideos?id=${id}`);
+        const response = await axios.get(`http://192.168.1.5:3000/profilevideos?id=${id}`);
         if (Array.isArray(response.data) && response.data.length > 0) {
           setVideos(response.data);
         }
@@ -47,7 +47,7 @@ const MyImages = ({id}) => {
     const navigation = useNavigation();
     const fetchData = async (id) => {
       try {
-        const response = await axios.get(`http://192.168.1.151:3000/profileimages?id=${id}`);
+        const response = await axios.get(`http://192.168.1.5:3000/profileimages?id=${id}`);
         if (Array.isArray(response.data) && response.data.length > 0) {
           setImages(response.data);
         }
@@ -154,7 +154,7 @@ export default function App({ navigation, route }) {
   const [data, setData] = useState({});
     const fetchData = async (id) => {
         try {
-          const response = await axios.get(`http://192.168.1.151:3000/follow?id=${id}`);
+          const response = await axios.get(`http://192.168.1.5:3000/follow?id=${id}`);
           if (Array.isArray(response.data) && response.data.length > 0) {
             const followData = response.data[0];
             setData(followData);
