@@ -10,6 +10,8 @@ export default function App({navigation}) {
     try {
       const response = await axios.get('http://192.168.1.5:3000/account');
       setData(response.data);
+      setUser("")
+      setPass("")
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -32,7 +34,7 @@ export default function App({navigation}) {
   };
   
   return (
-    <ImageBackground source={require('../assets/bgL.png')} resizeMode='contain' style={styles.container}>
+    <ImageBackground source={require('../assets/bgL.png')} resizeMode='cover' style={styles.container}>
       <View style={styles.overlay}>
         <View style={styles.logo}>
           <Text style={{color: 'pink', fontSize: 32, fontWeight: 'bold'}}>Welcome Back!</Text>

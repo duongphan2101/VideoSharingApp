@@ -54,6 +54,7 @@ const EditProfile = ({ navigation, route }) => {
   
       if (response.status === 200) {
         Alert.alert("Thành công", "Cập nhật thông tin thành công!");
+        navigation.navigate('Login')
       } else {
         Alert.alert("Lỗi", "Đã xảy ra lỗi khi cập nhật thông tin!");
       }

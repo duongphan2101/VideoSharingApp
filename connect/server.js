@@ -65,9 +65,9 @@ app.get('/follow', async (req, res) => {
   }
 });
 
-// API Endpoint để lấy danh sách da~ follow
+// API Endpoint để lấy danh sách người đang theo dõi người dùng (followed)
 app.get('/followed', async (req, res) => {
-  let id = parseInt(req.query.id, 10);
+  let id = parseInt(req.query.id, 10); // Lấy id người dùng
   if (isNaN(id)) {
     return res.status(400).json({ error: "Invalid ID parameter. Must be a number." });
   }
@@ -76,10 +76,11 @@ app.get('/followed', async (req, res) => {
     const result = await pool.request()
       .input('id', mssql.Int, id)
       .query(`
-        select f.id_following, u.* from Follow f
-        inner join Users u on u.idUser=f.id_following
-        where f.id_followed = @id
-      `);
+        SELECT f.id_following, u.*
+        FROM Follow f
+        INNER JOIN Users u ON u.idUser = f.id_following
+        WHERE f.id_followed = @id
+      `);  // Lấy danh sách những người đang theo dõi người dùng có id = @id
     res.json(result.recordset);
   } catch (err) {
     console.log('Error fetching followed:', err);
@@ -87,9 +88,9 @@ app.get('/followed', async (req, res) => {
   }
 });
 
-// API Endpoint để lấy danh sách da~ following
+// API Endpoint để lấy danh sách người mà người dùng đang theo dõi (following)
 app.get('/following', async (req, res) => {
-  let id = parseInt(req.query.id, 10); // Parse id to an integer
+  let id = parseInt(req.query.id, 10); // Lấy id người dùng
   if (isNaN(id)) {
     return res.status(400).json({ error: "Invalid ID parameter. Must be a number." });
   }
@@ -98,16 +99,18 @@ app.get('/following', async (req, res) => {
     const result = await pool.request()
       .input('id', mssql.Int, id)
       .query(`
-        select f.id_following, u.* from Follow f
-        inner join Users u on u.idUser=f.id_following
-        where f.id_followed = @id
-      `);
+        SELECT f.id_followed, u.*
+        FROM Follow f
+        INNER JOIN Users u ON u.idUser = f.id_followed
+        WHERE f.id_following = @id
+      `);  // Lấy danh sách những người mà người dùng đang theo dõi
     res.json(result.recordset);
   } catch (err) {
-    console.log('Error fetching followed:', err);
+    console.log('Error fetching following:', err);
     res.status(500).send('Server Error');
   }
 });
+
 
 // Same fix applied to other routes
 app.get('/profilevideos', async (req, res) => {
@@ -386,7 +389,7 @@ app.put('/updateProfile', async (req, res) => {
 app.post('/insertComment', async (req, res) => {
   const { idPost, idUser, text } = req.body;
 
-  if (!idUser || !idPost || !text ) {
+  if (!idUser || !idPost || !text) {
     return res.status(400).json({ error: 'Vui lòng cung cấp idUser, idPost và text.' });
   }
 
@@ -407,6 +410,185 @@ app.post('/insertComment', async (req, res) => {
     res.status(500).json({ error: 'Lỗi khi thêm bình luận vào cơ sở dữ liệu.' });
   }
 });
+
+// Endpoint để tao account end user
+app.post('/register', async (req, res) => {
+  const { username, sdt, email, accname, pass } = req.body;
+  const avatar = "https://imgur.com/a/QdlMMTF.png";
+  if (!username || !sdt || !email || !accname || !pass) {
+    return res.status(400).json({ error: 'Vui lòng cung cấp đầy đủ thông tin' });
+  }
+
+  try {
+    const pool = req.app.locals.db;
+    const transaction = new mssql.Transaction(pool);
+    await transaction.begin();
+
+    const request = transaction.request();
+    const resultUser = await request
+      .input('username', mssql.NVarChar, username)
+      .input('sdt', mssql.NVarChar, sdt)
+      .input('email', mssql.NVarChar, email + "@gmail.com")
+      .input('avatar', mssql.NVarChar, avatar)
+      .query(`
+        INSERT INTO Users (username, sdt, email, avatar, birthDay)
+        OUTPUT inserted.idUser
+        VALUES (@username, @sdt, @email, @avatar, GETDATE())
+      `);
+
+    const idUser = resultUser.recordset[0].idUser;
+    await request
+      .input('idUser', mssql.Int, idUser)
+      .input('accname', mssql.NVarChar, accname)
+      .input('pass', mssql.NVarChar, pass)
+      .query(`
+        INSERT INTO Account (idUser, username, pass)
+        VALUES (@idUser, @accname, @pass)
+      `);
+    await transaction.commit();
+
+    res.status(201).json({ message: 'Tạo tài khoản thành công!' });
+  } catch (error) {
+    console.error("Lỗi cơ sở dữ liệu:", error);
+
+    try {
+      if (transaction) await transaction.rollback();
+    } catch (rollbackError) {
+      console.error("Lỗi rollback:", rollbackError);
+    }
+
+    res.status(500).json({ error: 'Lỗi khi tạo tài khoản.' });
+  }
+});
+
+app.get('/is-following', async (req, res) => {
+  const { id_following, id_followed } = req.query;
+
+  // Kiểm tra đầu vào
+  if (!id_following || !id_followed) {
+    return res.status(400).json({ error: 'Thiếu id_following hoặc id_followed' });
+  }
+
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('id_following', mssql.Int, parseInt(id_following))
+      .input('id_followed', mssql.Int, parseInt(id_followed))
+      .query(`
+        SELECT COUNT(*) AS is_following
+        FROM Follow
+        WHERE id_following = @id_following AND id_followed = @id_followed;
+      `);
+
+    // Lấy giá trị is_following (0 hoặc 1)
+    const isFollowing = result.recordset[0].is_following > 0;
+
+    res.status(200).json({ isFollowing });
+  } catch (error) {
+    console.error("Lỗi kiểm tra follow:", error);
+    res.status(500).json({ error: 'Lỗi khi kiểm tra trạng thái follow.' });
+  }
+});
+
+// Endpoint để theo dõi người dùng
+app.post('/follow', async (req, res) => {
+  const { idFollowing, idFollowed } = req.body;
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('idFollowing', mssql.Int, parseInt(idFollowing))
+      .input('idFollowed', mssql.Int, parseInt(idFollowed))
+      .query(`
+              INSERT INTO Follow (id_following, id_followed)
+              VALUES (@idFollowing, @idFollowed)
+          `);
+    res.status(200).json({ message: 'Đã theo dõi người dùng thành công' });
+  } catch (error) {
+    console.error("Lỗi khi theo dõi:", error);
+    res.status(500).json({ error: 'Lỗi khi theo dõi người dùng.' });
+  }
+});
+
+// Endpoint để hủy theo dõi người dùng
+app.delete('/unfollow', async (req, res) => {
+  const { idFollowing, idFollowed } = req.body;
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('idFollowing', mssql.Int, parseInt(idFollowing))
+      .input('idFollowed', mssql.Int, parseInt(idFollowed))
+      .query(`
+              DELETE FROM Follow
+              WHERE id_following = @idFollowing AND id_followed = @idFollowed
+          `);
+    res.status(200).json({ message: 'Đã hủy theo dõi người dùng thành công' });
+  } catch (error) {
+    console.error("Lỗi khi hủy theo dõi:", error);
+    res.status(500).json({ error: 'Lỗi khi hủy theo dõi người dùng.' });
+  }
+});
+
+app.get('/is-like', async (req, res) => {
+  const { idPost, idUser } = req.query;
+
+  // Kiểm tra đầu vào
+  if (!idPost || !idUser) {
+    return res.status(400).json({ error: 'Thiếu idPost hoặc idUser' });
+  }
+
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('idPost', mssql.Int, parseInt(idPost))
+      .input('idUser', mssql.Int, parseInt(idUser))
+      .query(`
+        SELECT COUNT(*) AS is_like
+        FROM [Like]
+        WHERE idPost = @idPost AND idUser = @idUser;
+      `);
+
+    // Lấy giá trị is_Like (0 hoặc 1)
+    const is_Like = result.recordset[0].is_Like > 0;
+
+    res.status(200).json({ is_Like });
+  } catch (error) {
+    console.error("Lỗi kiểm tra Like:", error);
+    res.status(500).json({ error: 'Lỗi khi kiểm tra trạng thái Like.' });
+  }
+});
+
+app.post('/like', async (req, res) => {
+  const { idUser, idPost } = req.body;
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('idUser', mssql.Int, idUser)
+      .input('idPost', mssql.Int, idPost)
+      .query(`INSERT INTO [Like] (idUser, idPost) VALUES (@idUser, @idPost)`);
+
+    res.status(200).send({ message: "Liked successfully" });
+  } catch (error) {
+    console.error("Error liking post:", error);
+    res.status(500).send("Server error");
+  }
+});
+
+app.post('/unlike', async (req, res) => {
+  const { idUser, idPost } = req.body;
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('idUser', mssql.Int, idUser)
+      .input('idPost', mssql.Int, idPost)
+      .query(`DELETE FROM [Like] WHERE idUser = @idUser AND idPost = @idPost`);
+
+    res.status(200).send({ message: "Unliked successfully" });
+  } catch (error) {
+    console.error("Error unliking post:", error);
+    res.status(500).send("Server error");
+  }
+});
+
 
 
 // Khởi chạy server

@@ -5,11 +5,11 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-const MyVideos = ({idUser}) => {
+const MyVideos = ({idUser, my}) => {
     const navigation = useNavigation();
     const [followed, setFollowed] = useState([]);
     const click = ({user}) => {
-        navigation.navigate('ProfileDetails', {user: user});
+        navigation.navigate('ProfileDetails', {user: user, my:my});
     }
     const fetchData = async () => {
         try {
@@ -47,11 +47,11 @@ const MyVideos = ({idUser}) => {
     );
 };
 
-const MyImages = ({idUser}) => {
+const MyImages = ({idUser, my}) => {
     const navigation = useNavigation();
     const [followed, setFollowed] = useState([]);
     const click = ({user}) => {
-        navigation.navigate('ProfileDetails', {user: user});
+        navigation.navigate('ProfileDetails', {user: user, my:my});
     }
     const fetchData = async () => {
         try {
@@ -91,16 +91,16 @@ const MyImages = ({idUser}) => {
 
 const widthScreen = Dimensions.get('window').width;
 
-const MyVideosTabView = ({user, navigation}) => {
+const MyVideosTabView = ({user, navigation, my}) => {
     const [index, setIndex] = useState(0);
     const [routes] = useState([
-        { key: 'videos', title: 'Đã Follow' },
-        { key: 'images', title: 'Follower' },
+        { key: 'videos', title: 'Follower' },
+        { key: 'images', title: 'Đã Follow' },
     ]);
 
     const renderScene = SceneMap({
-        videos: () => <MyVideos navigation={navigation} idUser = {user.idUser} />,
-        images: () => <MyImages navigation={navigation} idUser = {user.idUser}/>,
+        videos: () => <MyVideos navigation={navigation} idUser = {user.idUser} my={my} />,
+        images: () => <MyImages navigation={navigation} idUser = {user.idUser} my={my}/>,
     });
 
     const renderTabBar = props => (
@@ -143,6 +143,7 @@ const dataGoiY = [
 
 export default function App({ navigation, route }) {
     const user = route.params.user;
+    const my = user;
     return (
         <View style={styles.container}>
             <View style={styles.head}>
@@ -156,7 +157,7 @@ export default function App({ navigation, route }) {
                     <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='bars' size={20} color='black'/></TouchableOpacity>
                 </View>
             </View>
-            <MyVideosTabView user={user}/>
+            <MyVideosTabView user={user} my={my}/>
             <View style={{marginBottom: 20, height: 300}}>
                 <Text style={{backgroundColor: '#E8E8E8', padding: 10}}>Suggestion for you</Text>
                 <FlatList

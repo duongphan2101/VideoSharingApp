@@ -165,7 +165,7 @@ export default function App() {
             }}
         />
         <Stack.Screen 
-            name='New Fist' 
+            name='New Feed' 
             component={ImageStreaming}
             // options={{
             //   headerTitle:""

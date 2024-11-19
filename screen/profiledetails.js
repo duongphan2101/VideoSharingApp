@@ -109,6 +109,8 @@ const MyVideosTabView = ({id}) => {
 
 export default function App({ navigation, route }) {
     const user = route.params.user;
+    const my = route.params.my;
+    const [isFollowing, setIsFollowing] = useState(false);
     const [data, setData] = useState({});
     const fetchData = async (id) => {
         try {
@@ -116,6 +118,9 @@ export default function App({ navigation, route }) {
           if (Array.isArray(response.data) && response.data.length > 0) {
             const followData = response.data[0];
             setData(followData);
+            // console.log("my ", my.idUser)
+            // console.log("user ", user.idUser)
+            checkIsFollowing(my.idUser, user.idUser)
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -127,6 +132,63 @@ export default function App({ navigation, route }) {
       fetchData(user.idUser);
     }
   }, [user]);
+
+  const checkIsFollowing = async (idFollowing, idFollowed) => {
+      try {
+          const response = await axios.get('http://192.168.1.5:3000/is-following', {
+              params: {
+                  id_following: idFollowing,
+                  id_followed: idFollowed
+              }
+          });
+  
+          if (response.status === 200) {
+              const isFollowing = response.data.isFollowing;
+              setIsFollowing(isFollowing);
+          } else {
+              console.error("Lỗi khi kiểm tra trạng thái:", response.status);
+              setIsFollowing(false);
+          }
+      } catch (error) {
+          console.error("Lỗi khi gọi API2:", error);
+          setIsFollowing(false);
+      }
+  };
+
+  const follow = async (idFollowing, idFollowed) => {
+    try {
+        const response = await axios.post('http://192.168.1.5:3000/follow', {
+            idFollowing: idFollowing,
+            idFollowed: idFollowed,
+        });
+
+        if (response.status === 200) {
+            setIsFollowing(true);
+        } else {
+            console.error("Lỗi khi thực hiện theo dõi:", response.status);
+        }
+    } catch (error) {
+        console.error("Lỗi khi gọi API theo dõi:", error);
+    }
+};
+const unfollow = async (idFollowing, idFollowed) => {
+    try {
+        const response = await axios.delete('http://192.168.1.5:3000/unfollow', {
+            idFollowing: idFollowing,
+            idFollowed: idFollowed,
+        });
+
+        if (response.status === 200) {
+            setIsFollowing(false);
+        } else {
+            console.error("Lỗi khi thực hiện hủy theo dõi:", response.status);
+        }
+    } catch (error) {
+        console.error("Lỗi khi gọi API hủy theo dõi:", error);
+    }
+};
+
+  
 
     return (
         <View style={[styles.container]}>
@@ -164,9 +226,30 @@ export default function App({ navigation, route }) {
             </View>
             <View style={{ flexDirection: 'row', marginTop: 15, alignItems: 'center', justifyContent: 'center' }}>
 
-                <TouchableOpacity style={styles.fl}>
-                    <Image source={require('../assets/ProfileDetails/Button21.png')} />
-                </TouchableOpacity>
+            <TouchableOpacity
+                style={[
+                    styles.fl,
+                    {
+                        backgroundColor: isFollowing ? 'white' : 'pink',
+                        padding: 8,
+                        borderRadius: 5,
+                        borderWidth: 1,
+                        borderColor: isFollowing ? 'pink' : 'transparent'
+                    }
+                ]}
+                onPress={() => {
+                    if (isFollowing) {
+                        unfollow(my.idUser, user.idUser);
+                    } else {
+                        follow(my.idUser, user.idUser);
+                    }
+                }}
+            >
+                <Text style={{ color: isFollowing ? 'pink' : 'white' }}>
+                    {isFollowing ? 'Following' : 'Follow'}
+                </Text>
+            </TouchableOpacity>
+
 
                 <TouchableOpacity style={styles.fl}>
                     <Image source={require('../assets/ProfileDetails/Button20.png')} />

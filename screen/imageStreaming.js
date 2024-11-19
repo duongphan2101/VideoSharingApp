@@ -4,7 +4,8 @@ import EvilIcons from '@expo/vector-icons/EvilIcons';
 import axios from 'axios';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import Icon3 from 'react-native-vector-icons/EvilIcons';
-const ImageViewScreen = () => {
+const ImageViewScreen = ({navigation, route}) => {
+    const my  = route.params.userData;
     const [images, setImages] = useState([]);
     const [likedPosts, setLikedPosts] = useState({});
     const [comments, setComments] = useState([]);
@@ -46,10 +47,10 @@ const ImageViewScreen = () => {
     const renderAnh = ({ item }) => (
         
         <View style={styles.card}>
-            <View style={{ padding: 10, flexDirection: 'row' }}>
+            <TouchableOpacity style={{ padding: 10, flexDirection: 'row' }} onPress={() => navigation.navigate('ProfileDetails', { user: item, my: my })}>
                 <Image style={{ height: 30, width: 30, borderRadius: 30 }} source={{ uri: item.avatar }} />
                 <Text style={{ fontWeight: 'bold', alignSelf: 'center', marginLeft: 10 }}>{item.username}</Text>
-            </View>
+            </TouchableOpacity>
             <Image
                 source={{ uri: item.url }}
                 style={styles.image}

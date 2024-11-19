@@ -22,18 +22,41 @@ export default function App({navigation}) {
 
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [sdt, setSdt] = useState("");
 
-  const handleLogin = () => {
-    const checkAccount = data.find(item => item.account_user === user && item.pass === pass);
-    if(checkAccount){
-      navigation.navigate('VideoSharingApp', {userData: checkAccount });
-    }else{
-      Alert.alert('Kiểm tra lại tài khoản và mật khẩu!');
+  const regis = () => {
+    console.log("accname "+user)
+    console.log("pass "+pass)
+    console.log("User name "+ name)
+    console.log("sdt "+sdt)
+    console.log("email "+email)
+  }
+  const InsertUser = async () => {
+    try {
+      const response = await axios.post('http://192.168.1.5:3000/register', {
+        username: name,
+        sdt, 
+        email, 
+        accname: user,
+        pass
+      });
+  
+      if (response.status === 201) {
+        Alert.alert("Thành công", "Tạo tài khoản thành công");
+        navigation.navigate('Login');
+      } else {
+        Alert.alert("Lỗi", "Đã xảy ra lỗi khi tạo tài khoản");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+      Alert.alert("Lỗi", "Không thể kết nối tới máy chủ.");
     }
   };
   
   return (
-    <ImageBackground source={require('../assets/bgL.png')} resizeMode='contain' style={styles.container}>
+    <ImageBackground source={require('../assets/bgL.png')} resizeMode='cover' style={styles.container}>
       <View style={styles.overlay}>
         <View style={styles.logo}>
           <Text style={{color: 'pink', fontSize: 32, fontWeight: 'bold'}}>Nice to meet you!</Text>
@@ -68,8 +91,8 @@ export default function App({navigation}) {
               style={styles.textInput} 
               placeholder='Your name' 
               placeholderTextColor={'pink'} 
-              // value={user} 
-              // onChangeText={setUser}
+              value={name} 
+              onChangeText={setName}
             />
           </View>
           
@@ -82,8 +105,8 @@ export default function App({navigation}) {
               style={styles.textInput} 
               placeholder='Your email' 
               placeholderTextColor={'pink'} 
-              // value={user} 
-              // onChangeText={setUser}
+              value={email} 
+              onChangeText={setEmail}
             />
             <TextInput 
               style={styles.textInput} 
@@ -103,28 +126,26 @@ export default function App({navigation}) {
               style={styles.textInput} 
               placeholder='Your Phone' 
               placeholderTextColor={'pink'} 
-              // value={user} 
-              // onChangeText={setUser}
+              value={sdt} 
+              onChangeText={setSdt}
             />
           </View>
           
         </View>
 
-          <TouchableOpacity style={styles.Touch} onPress={handleLogin}>
+          <TouchableOpacity style={styles.Touch} onPress={InsertUser}>
             <Text style={{fontSize: 24, fontWeight: 'bold', color: 'white'}}>Register</Text>
           </TouchableOpacity>
 
           <View style={styles.hr}/>
-
-          {/* Uncomment the following if you need a Register option */}
-          
+     
           <TouchableOpacity style={{alignItems: 'flex-start', flexDirection: 'row', paddingHorizontal: 20, width: '100%'}} onPress={()=> navigation.navigate('Login')}>
           <AntDesign name="arrowleft" size={16} color="white" style={{alignSelf: 'center', paddingHorizontal: 10}}/>
             <Text style={{fontSize: 13, color: 'white'}}>Login</Text>
 
           </TouchableOpacity>
          
-          <Text style={{fontSize: 11, color: 'white', position: 'absolute', bottom: 10, alignSelf: 'center'}}>Cre: PN2D2101</Text>
+          {/* <Text style={{fontSize: 11, color: 'white', position: 'absolute', bottom: 10, alignSelf: 'center'}}>Cre: PN2D2101</Text> */}
       </View>
     </ImageBackground>
   );

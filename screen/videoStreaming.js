@@ -17,6 +17,8 @@ export default function VideoStreaming({ navigation, route }) {
   const [currentVideoData, setCurrentVideoData] = useState({ likeCount: 0, commentCount: 0 });
 
   const user = route.params.userData;
+  const my = user;
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`http://192.168.1.5:3000/videoStreaming`);
@@ -24,15 +26,43 @@ export default function VideoStreaming({ navigation, route }) {
         setVideos(response.data);
         setActivePostId(response.data[0].idPost);
         updateCurrentVideoData(response.data[0].idPost);
+  
+        // Check like status for all videos
+        const likeStatuses = {};
+        for (const video of response.data) {
+          const res = await axios.get('http://192.168.1.5:3000/is-like', {
+            params: { idPost: video.idPost, idUser: user.idUser },
+          });
+          likeStatuses[video.idPost] = res.data.is_like;
+        }
+        setLikedPosts(likeStatuses);
       }
     } catch (error) {
       console.error("Error fetching video data:", error);
     }
   };
+  
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (activePosId) {
+      checkIsLike(activePosId, user.idUser);
+    }
+  }, [activePosId]);
+
+  useEffect(() => {
+    if (likedPosts[activePosId] !== undefined) {
+      setCurrentVideoData((prev) => ({
+        ...prev,
+        is_like: likedPosts[activePosId],
+      }));
+    }
+  }, [likedPosts, activePosId]);
+  
+  
 
   const handlePlayPause = (index) => {
     const video = videoRefs.current[index];
@@ -47,9 +77,33 @@ export default function VideoStreaming({ navigation, route }) {
     }
   };
 
-  const toggleLike = (id) => {
-    setLikedPosts(prev => ({ ...prev, [id]: !prev[id] }));
+  const toggleLike = async (idPost) => {
+    try {
+      const isCurrentlyLiked = likedPosts[idPost];
+      const url = isCurrentlyLiked
+        ? `http://192.168.1.5:3000/unlike`
+        : `http://192.168.1.5:3000/like`;
+  
+      const response = await axios.post(url, {
+        idUser: user.idUser,
+        idPost: idPost,
+      });
+  
+      if (response.status === 200) {
+        setLikedPosts((prev) => ({ ...prev, [idPost]: !isCurrentlyLiked }));
+        setCurrentVideoData((prev) => ({
+          ...prev,
+          likeCount: isCurrentlyLiked ? prev.likeCount - 1 : prev.likeCount + 1,
+        }));
+      } else {
+        Alert.alert("Lỗi", "Không thể cập nhật trạng thái 'like'.");
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi xử lý yêu cầu 'like'.");
+    }
   };
+  
 
   const handleViewableItemsChanged = ({ viewableItems }) => {
     if (viewableItems.length > 0) {
@@ -70,6 +124,24 @@ export default function VideoStreaming({ navigation, route }) {
       });
     }
   };
+  const [isLike, setIsLike] = useState(false);
+  const checkIsLike = async (idPost, idUser) => {
+    try {
+      const response = await axios.get('http://192.168.1.5:3000/is-like', {
+        params: { idPost, idUser },
+      });
+  
+      if (response.status === 200) {
+        setLikedPosts((prev) => ({
+          ...prev,
+          [idPost]: response.data.is_like,
+        }));
+      }
+    } catch (error) {
+      console.error("Error checking like status:", error);
+    }
+  };
+  
 
   const updateCurrentVideoData = async (idPost) => {
     try {
@@ -81,6 +153,7 @@ export default function VideoStreaming({ navigation, route }) {
       setCurrentVideoData({
         likeCount: likeResponse.data[0]?.like_count || 0,
         commentCount: commentResponse.data[0]?.comment_count || 0,
+        is_like: isLike
       });
     } catch (error) {
       console.error("Error updating video data:", error);
@@ -100,7 +173,7 @@ export default function VideoStreaming({ navigation, route }) {
         />
       </TouchableOpacity>
       <View style={styles.boxIcon}>
-        <TouchableOpacity onPress={() => navigation.navigate('ProfileDetails', { user: item })}>
+        <TouchableOpacity onPress={() => navigation.navigate('ProfileDetails', { user: item, my: my })}>
           <Image
             style={{ height: 50, width: 50, borderRadius: 50, marginBottom: 10 }}
             source={{ uri: item.avatar }}
@@ -110,14 +183,17 @@ export default function VideoStreaming({ navigation, route }) {
         <TouchableOpacity onPress={() => toggleLike(item.idPost)}>
           <Icon2
             style={styles.iconRight}
-            name="heart-o"
+            name={likedPosts[item.idPost] ? "heart-o" : "heart-o"}
             size={30}
-            color={likedPosts[item.idPost] ? 'red' : 'white'}
+            color={likedPosts[item.idPost] ? "red" : "white"}
           />
           <Text style={styles.count}>
             {item.idPost === activePosId ? currentVideoData.likeCount : 0}
           </Text>
         </TouchableOpacity>
+
+
+
         <TouchableOpacity onPress={() => fetchComments(item.idPost)}>
           <Icon2 style={styles.iconRight} name="comment-o" size={30} color="white" />
           <Text style={styles.count}>
@@ -157,7 +233,7 @@ export default function VideoStreaming({ navigation, route }) {
     }
   };
 
-  const insertComment = async (idUser, idPost, text, navigation) => {
+  const insertComment = async (idUser, idPost, text) => {
     try {
       const response = await axios.post('http://192.168.1.5:3000/insertComment', {
         idUser,
@@ -234,7 +310,10 @@ export default function VideoStreaming({ navigation, route }) {
               renderItem={({ item }) => (
                 <View style={{ flexDirection: 'row', padding: 5, alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Image source={{ uri: item.avatar }} style={{ height: 50, width: 50, borderRadius: 50 }} />
+                  <TouchableOpacity
+                    onPress={() => { setCommentsVisible(false); navigation.navigate('ProfileDetails', { user: item, my: my });}}>
+                      <Image source={{ uri: item.avatar }} style={{ height: 50, width: 50, borderRadius: 50 }} />
+                    </TouchableOpacity>
                     <View style={{ paddingLeft: 10 }}>
                       <Text style={[styles.commentText, { fontWeight: 'bold' }]}>{item.username}</Text>
                       <Text style={{ fontSize: 11, color: 'gray', marginTop: -8, marginBottom: 5 }}>{item.time}</Text>
@@ -283,7 +362,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconRight: {
-    paddingVertical: 10,
+    paddingVertical: 15,
   },
   boxTitle: {
     position: 'absolute',
@@ -343,8 +422,9 @@ const styles = StyleSheet.create({
     color: 'white'
     , position: 'absolute'
     , alignSelf: 'center',
-    backgroundColor: 'black',
-    bottom: 5,
-    fontSize: 18
+    // backgroundColor: 'transparent',
+    bottom: 10,
+    fontSize: 18,
+    backgroundColor: 'black'
   }
 });

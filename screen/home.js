@@ -100,7 +100,7 @@ export default function App({ navigation, route }) {
 
       // Hàm renderAnh
   const renderAnh = ({ item }) => (
-    <TouchableOpacity style={{padding: 10}} onPress={()=> {navigation.navigate('New Fist')}}>
+    <TouchableOpacity style={{padding: 10}} onPress={()=> {navigation.navigate('New Feed', {userData: user})}}>
        <Image style={{height: 120, width: 100, borderRadius: 10, resizeMode: 'contain'}} source={{uri : item.url}}/>
        <Text style={{marginTop: 10, alignSelf: 'center'}}>{item.content}</Text>
     </TouchableOpacity>
@@ -175,7 +175,7 @@ export default function App({ navigation, route }) {
     <SafeAreaView style={{ marginTop: 20, marginBottom: 20}}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Images</Text>
-        <TouchableOpacity onPress={()=> {navigation.navigate('New Fist')}}>
+        <TouchableOpacity onPress={()=> {navigation.navigate('New Feed', {userData: user})}}>
           <Image source={require('../assets/Home_Video_Listing/Button1.png')} />
         </TouchableOpacity>
       </View>
