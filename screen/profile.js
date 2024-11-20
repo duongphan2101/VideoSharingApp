@@ -9,7 +9,7 @@ const MyVideos = ({ id }) => {
     const navigation = useNavigation();
     const fetchData = async (id) => {
       try {
-        const response = await axios.get(`http://192.168.1.5:3000/profilevideos?id=${id}`);
+        const response = await axios.get(`http://192.168.1.141:3000/profilevideos?id=${id}`);
         if (Array.isArray(response.data) && response.data.length > 0) {
           setVideos(response.data);
         }
@@ -47,7 +47,7 @@ const MyImages = ({id}) => {
     const navigation = useNavigation();
     const fetchData = async (id) => {
       try {
-        const response = await axios.get(`http://192.168.1.5:3000/profileimages?id=${id}`);
+        const response = await axios.get(`http://192.168.1.141:3000/profileimages?id=${id}`);
         if (Array.isArray(response.data) && response.data.length > 0) {
           setImages(response.data);
         }
@@ -151,10 +151,22 @@ const MyVideosTabView = ({ id }) => {
 export default function App({ navigation, route }) {
   
   const user = route.params.userData;
+  const [user1, setUser] = useState();  
+ 
+  const fetchDataUser = async () => {
+    try {
+      const response = await axios.get(`http://192.168.1.141:3000/data?id=${user.idUser}`);
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        setUser(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching video data:", error);
+    }
+  };
   const [data, setData] = useState({});
     const fetchData = async (id) => {
         try {
-          const response = await axios.get(`http://192.168.1.5:3000/follow?id=${id}`);
+          const response = await axios.get(`http://192.168.1.141:3000/follow?id=${id}`);
           if (Array.isArray(response.data) && response.data.length > 0) {
             const followData = response.data[0];
             setData(followData);
@@ -165,6 +177,7 @@ export default function App({ navigation, route }) {
       };
 
   useEffect(() => {
+    fetchDataUser();
     if (user && user.idUser) {
       fetchData(user.idUser);
     }

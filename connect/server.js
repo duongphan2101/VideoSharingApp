@@ -42,6 +42,24 @@ app.get('/account', async (req, res) => {
   }
 });
 
+
+app.get('/data', async (req, res) => {
+  let id = parseInt(req.query.id, 10);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid ID parameter. Must be a number." });
+  }
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('id', mssql.Int, id)
+      .query(`select * from Users where idUser= @id`);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching followed:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
 // API Endpoint để lấy danh sách follow
 app.get('/follow', async (req, res) => {
   let id = parseInt(req.query.id, 10); // Parse id to an integer
@@ -316,8 +334,6 @@ app.get('/likeCount', async (req, res) => {
 // Endpoint để lưu bài viết mới
 app.post('/savePost', async (req, res) => {
   const { idUser, type, url, content } = req.body;
-  const count_like = 0;
-  const count_comment = 0;
   if (!idUser || !type || !url || !content) {
     return res.status(400).json({ error: 'Vui lòng cung cấp idUser, type, url và content.' });
   }
@@ -329,11 +345,9 @@ app.post('/savePost', async (req, res) => {
       .input('type', mssql.NVarChar, type)
       .input('url', mssql.NVarChar, url)
       .input('content', mssql.NVarChar, content)
-      .input('count_like', mssql.Int, count_like)
-      .input('count_comment', mssql.Int, count_comment)
       .query(`
-        INSERT INTO dbo.Post (idUser, type, url, content, upload_at, count_like, count_comment)
-        VALUES (@idUser, @type, @url, @content, GETDATE(), @count_like, @count_comment)
+        INSERT INTO dbo.Post (idUser, type, url, content, upload_at)
+        VALUES (@idUser, @type, @url, @content, GETDATE())
       `);
 
     res.status(201).json({ message: 'Bài viết đã được lưu thành công!' });
@@ -589,6 +603,35 @@ app.post('/unlike', async (req, res) => {
   }
 });
 
+app.get('/stories', async (req, res) => {
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.query(
+      `SELECT p.*, u.avatar, u.username FROM Post p
+      inner join Users u on p.idUser = u.idUser
+       WHERE type = 'story' AND DATEDIFF(HOUR, upload_at, GETDATE()) <= 24
+       ORDER BY p.idPost DESC`
+    );
+    res.status(200).json(result.recordset);
+  } catch (err) {
+    res.status(500).send('Error fetching stories');
+  }
+});
+
+app.get('/Userstories', async (req, res) => {
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.query(
+      `SELECT u.idUser, u.avatar, u.username,MAX(p.upload_at) AS latest_upload_at FROM Post p 
+INNER JOIN Users u ON p.idUser = u.idUser
+WHERE p.type = 'story' AND DATEDIFF(HOUR, p.upload_at, GETDATE()) <= 24
+GROUP BY u.idUser, u.avatar, u.username ORDER BY latest_upload_at DESC;`
+    );
+    res.status(200).json(result.recordset);
+  } catch (err) {
+    res.status(500).send('Error fetching stories');
+  }
+});
 
 
 // Khởi chạy server

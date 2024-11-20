@@ -32,7 +32,7 @@ const Post_Video_Screen = ({ navigation, route }) => {
   };
 
   const post = () => {
-    postMedia(user.idUser, mediaType, media, navigation);
+    postMedia(user.idUser, 'story', media, navigation);
   }
   
   return (

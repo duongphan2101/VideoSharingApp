@@ -15,11 +15,15 @@ import login from './screen/Login.js'
 import Register from './screen/Register.js'
 import post from './screen/Post_Video_Screen.js';
 import plus from './screen/Create_Video.js';
+import createStory from './screen/Create_Story.js';
+import postStory from './screen/Post_Story.js';
 import Following from './screen/following.js';
 import profileDetails from './screen/profiledetails.js';
 import videoDetails from './screen/videoDetails.js';
 import editProfile from './screen/EditProfile.js';
 import ImageView from './screen/ImageView.js';
+import StoryDetails from './screen/storyDetails.js';
+// import StoryStreaming from './screen/storyStreaming.js';
 import ImageStreaming from './screen/imageStreaming.js';
 import { TouchableOpacity } from 'react-native';
 
@@ -145,8 +149,26 @@ export default function App() {
               headerShown: false}}
         />
         <Stack.Screen 
+            name='PostStory' 
+            component={postStory}
+            options={{
+              headerShown: false}}
+        />
+        <Stack.Screen 
+            name='CreateStory' 
+            component={createStory}
+            options={{
+              headerShown: false}}
+        />
+        <Stack.Screen 
             name='VideoDetails' 
             component={videoDetails}
+            options={{
+              headerShown: false}}
+        />
+        <Stack.Screen 
+            name='StoryDetails' 
+            component={StoryDetails}
             options={{
               headerShown: false}}
         />

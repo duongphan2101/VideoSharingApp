@@ -37,8 +37,6 @@ CREATE TABLE Post (
     url NVARCHAR(255),                         -- Đường dẫn media (video, ảnh...)
     content NVARCHAR(1000),                    -- Nội dung bài đăng
     upload_at DATETIME,                        -- Thời gian đăng
-    count_like INT DEFAULT 0,                  -- Số lượng like (mặc định 0)
-    count_comment INT DEFAULT 0,               -- Số lượng comment (mặc định 0)
     CONSTRAINT FK_Post_User FOREIGN KEY (idUser) REFERENCES Users(idUser)
 );
 

@@ -1,5 +1,5 @@
 import { TouchableOpacity } from 'react-native';
-import { SafeAreaView, StyleSheet, Text, View, Image, ScrollView, FlatList } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Image, ScrollView, FlatList, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useState, useEffect } from 'react';
 import { Video } from 'expo-av';
@@ -9,11 +9,6 @@ const dataTopTrending = [
   { id: '1', image: require('../assets/Home_Video_Listing/Container3.png'), marginLeft: -10 },
   { id: '2', image: require('../assets/Home_Video_Listing/Container15.png'), marginLeft: 0 },
   { id: '3', image: require('../assets/Home_Video_Listing/Container16.png'), marginLeft: 0 },
-];
-const dataStreaming = [
-  { id: '1', image: require('../assets/Home_Video_Listing/Container11.png'), marginLeft: -10 },
-  { id: '2', image: require('../assets/Home_Video_Listing/Container32.png'), marginLeft: 0 },
-  { id: '3', image: require('../assets/Home_Video_Listing/Container34.png'), marginLeft: 0 },
 ];
 const dataAudio = [
   { 
@@ -45,15 +40,25 @@ const dataAudio = [
   },
 ];
 
-
-
 export default function App({ navigation, route }) {
     const user  = route.params.userData;
     const [images, setImages] = useState([]);
+    const [stories, setStory] = useState([]);
+    const [user1, setUser] = useState();
 
+    const fetchDataUser = async () => {
+      try {
+        const response = await axios.get(`http://192.168.1.141:3000/data?id=${user.idUser}`);
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setUser(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching video data:", error);
+      }
+    };
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.5:3000/imageStreaming4`);
+        const response = await axios.get(`http://192.168.1.141:3000/imageStreaming4`);
         if (Array.isArray(response.data) && response.data.length > 0) {
           setImages(response.data);
         }
@@ -62,25 +67,51 @@ export default function App({ navigation, route }) {
       }
     };
 
+    const fetchStories = async () => {
+      try {
+        const response = await axios.get('http://192.168.1.141:3000/Userstories');
+        setStory(response.data);
+      } catch (error) {
+        console.error('Error fetching stories:', error);
+        Alert.alert('Lỗi', 'Không thể lấy danh sách story');
+      }
+    };
+
     useEffect(() => {
+      fetchDataUser();
       fetchData();
+      fetchStories();
+
     }, []);
 
-    const dataStories = [
-      { id: '1', containerImage: {uri: user.avatar}, userImage: require('../assets/Home_Video_Listing/You.png') },
-      { id: '2', containerImage: require('../assets/Home_Video_Listing/Container17.png'), userImage: require('../assets/Home_Video_Listing/Adam.png') },
-      { id: '3', containerImage: require('../assets/Home_Video_Listing/Container20.png'), userImage: require('../assets/Home_Video_Listing/William.png') },
-      { id: '4', containerImage: require('../assets/Home_Video_Listing/Container23.png'), userImage: require('../assets/Home_Video_Listing/Peter.png') },
-      { id: '5', containerImage: require('../assets/Home_Video_Listing/Container26.png'), userImage: require('../assets/Home_Video_Listing/Julia.png') },
-      { id: '6', containerImage: require('../assets/Home_Video_Listing/Container29.png'), userImage: require('../assets/Home_Video_Listing/Rose.png') },
-    ];
-  // Hàm renderItem cho phần Stories
-  const renderItem1 = ({ item }) => (
-    <TouchableOpacity style={styles.padTouch}>
-      <Image style={{height: 50, width: 50, borderRadius: 50}} source={item.containerImage} />
-      <Image source={item.userImage} />
+// Hàm renderItem cho phần Stories
+const renderItem1 = ({ item }) => {
+  const maxLength = 7;
+  const displayName =
+    item.username.length > maxLength
+      ? item.username.slice(0, maxLength) + '...'
+      : item.username;
+
+  return (
+    <TouchableOpacity
+      style={styles.padTouch}
+      onPress={() => navigation.navigate('StoryDetails', { userData: user })}
+    >
+      <Image
+        style={{
+          height: 50,
+          width: 50,
+          borderRadius: 50,
+          borderWidth: 3,
+          borderColor: '#0099FF',
+        }}
+        source={{ uri: item.avatar }}
+      />
+      <Text style={styles.username}>{displayName}</Text>
     </TouchableOpacity>
   );
+};
+
 
   // Hàm renderItem
   const renderItem = ({ item }) => (
@@ -102,7 +133,6 @@ export default function App({ navigation, route }) {
   const renderAnh = ({ item }) => (
     <TouchableOpacity style={{padding: 10}} onPress={()=> {navigation.navigate('New Feed', {userData: user})}}>
        <Image style={{height: 120, width: 100, borderRadius: 10, resizeMode: 'contain'}} source={{uri : item.url}}/>
-       <Text style={{marginTop: 10, alignSelf: 'center'}}>{item.content}</Text>
     </TouchableOpacity>
   );
   return (
@@ -110,10 +140,15 @@ export default function App({ navigation, route }) {
 
     {/* Story Section */}
     <SafeAreaView style={styles.listStory}>
+      <TouchableOpacity style={{alignItems: 'center'}} onPress={()=> navigation.navigate('CreateStory', {userData: user})}>
+        <Image style={{height: 50, width: 50, borderRadius: 50}} source={{uri: user.avatar}} />
+        <Text>You</Text>
+      </TouchableOpacity>
+
       <FlatList
-        data={dataStories}
+        data={stories}
         renderItem={renderItem1}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.idPost}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
       />
@@ -175,7 +210,7 @@ export default function App({ navigation, route }) {
     <SafeAreaView style={{ marginTop: 20, marginBottom: 20}}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Images</Text>
-        <TouchableOpacity onPress={()=> {navigation.navigate('New Feed', {userData: user})}}>
+        <TouchableOpacity onPress={()=> {navigation.navigate('New Feed', {userData: user1})}}>
           <Image source={require('../assets/Home_Video_Listing/Button1.png')} />
         </TouchableOpacity>
       </View>

@@ -23,7 +23,7 @@ export default function VideoStreaming({ navigation, route }) {
   // const widthScreen = Dimensions.get('window').width;
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.5:3000/videoDetails?id=${id}`);
+      const response = await axios.get(`http://192.168.1.141:3000/videoDetails?id=${id}`);
       if (Array.isArray(response.data) && response.data.length > 0) {
         setVideos(response.data);
         setActivePostId(response.data[0].id);
@@ -61,7 +61,7 @@ export default function VideoStreaming({ navigation, route }) {
   const fetchComments = async () => {
 
     try {
-      const response = await axios.get(`http://192.168.1.5:3000/comment?id=${id}`);
+      const response = await axios.get(`http://192.168.1.141:3000/comment?id=${id}`);
       if (response.status === 200) {
         setComments(response.data);
         setCommentsVisible(true);
@@ -77,7 +77,7 @@ export default function VideoStreaming({ navigation, route }) {
   const fetchCommentCount = async () => {
 
     try {
-      const response = await axios.get(`http://192.168.1.5:3000/commentCount?id=${id}`);
+      const response = await axios.get(`http://192.168.1.141:3000/commentCount?id=${id}`);
       if (response.status === 200) {
         setCount(response.data);
       } else {
@@ -93,7 +93,7 @@ export default function VideoStreaming({ navigation, route }) {
   const fetchLikeCount = async () => {
 
     try {
-      const response = await axios.get(`http://192.168.1.5:3000/LikeCount?id=${id}`);
+      const response = await axios.get(`http://192.168.1.141:3000/LikeCount?id=${id}`);
       if (response.status === 200) {
         setlikeCount(response.data);
       } else {
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconRight: {
-    paddingVertical: 10,
+    paddingVertical: 20,
   },
   boxTitle: {
     position: 'absolute',
@@ -310,8 +310,8 @@ const styles = StyleSheet.create({
     color: 'white'
     , position: 'absolute'
     , alignSelf: 'center',
-    backgroundColor: 'black',
-    bottom: 5,
+    backgroundColor: 'transparent',
+    bottom: 2,
     fontSize: 18
   }
 

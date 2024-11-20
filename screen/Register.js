@@ -9,7 +9,7 @@ export default function App({navigation}) {
   const [data, setData] = useState([]);
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://192.168.1.5:3000/account');
+      const response = await axios.get('http://192.168.1.141:3000/account');
       setData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -35,7 +35,7 @@ export default function App({navigation}) {
   }
   const InsertUser = async () => {
     try {
-      const response = await axios.post('http://192.168.1.5:3000/register', {
+      const response = await axios.post('http://192.168.1.141:3000/register', {
         username: name,
         sdt, 
         email, 
