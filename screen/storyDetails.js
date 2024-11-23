@@ -21,7 +21,7 @@ export default function VideoStreaming({ navigation }) {
   // Fetch stories từ API
   const fetchStories = async () => {
     try {
-      const response = await axios.get('http://192.168.1.141:3000/stories');
+      const response = await axios.get('http://192.168.1.140:3000/stories');
       setStories(response.data);
     } catch (error) {
       console.error('Error fetching stories:', error);
@@ -69,8 +69,9 @@ export default function VideoStreaming({ navigation }) {
             source={{ uri: item.url }}
             style={styles.media}
             resizeMode="cover"
-            shouldPlay={false}
+            shouldPlay={true}
             isLooping
+            // useNativeControls
           />
         ) : (
           <Image source={{ uri: item.url }} resizeMode='cover' style={styles.media} />
@@ -93,11 +94,11 @@ export default function VideoStreaming({ navigation }) {
         showsHorizontalScrollIndicator={false}
         onViewableItemsChanged={({ viewableItems }) => {
           if (viewableItems.length > 0) {
-            setActiveStoryIndex(viewableItems[0].index); // Cập nhật story đang hiển thị
+            setActiveStoryIndex(viewableItems[0].index);
           }
         }}
         viewabilityConfig={{
-          itemVisiblePercentThreshold: 50, // Độ hiển thị ít nhất để tính là đang được xem
+          itemVisiblePercentThreshold: 50,
         }}
       />
     </View>

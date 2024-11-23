@@ -2,30 +2,33 @@ import { Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+const widthScreen = Dimensions.get('window').width;
+export default function App({ navigation, route}) {
+    const user = route.params.userData;
 
+    const [suggest, setSuggest] = useState([]);
 
-  const dataFollowing = [
-    { id: '1', caption: 'Love is life color <3', name : 'Kiran Glaucus', image: require('../assets/Follow/Avatar31.png')},
-    { id: '2', caption: 'fan 24kRight', name : 'Sally Rooney', image: require('../assets/Follow/Avatar32.png')},
-    { id: '3', caption: 'this is the dogman', name : 'Marie Franco', image: require('../assets/Follow/Avatar36.png')},
-    { id: '4', caption: 'im crazy', name : 'Jena Nguyen', image: require('../assets/Follow/Avatar35.png')},
-    { id: '5', caption: 'nolove nolife', name : 'Kristin Watson', image: require('../assets/Follow/Avatar34.png')},
-  ];
-
-export default function App({ navigation}) {
+    const fetchData = async (id) => {
+        try {
+          const response = await axios.get(`http://192.168.1.140:3000/suggest?id=${id}`);
+          if (Array.isArray(response.data) && response.data.length > 0) {
+            setSuggest(response.data);
+          }
+        } catch (error) {
+          console.error("Lỗi khi lấy dữ liệu:", error);
+        }
+      };
     
+      useEffect(() => {
+        if (user.idUser) {
+          fetchData(user.idUser); 
+        }
+      }, [user.idUser]);
+
     return (
         <View style={[styles.container]}>
-            {/* <View style={styles.head}>
-                <View style={styles.leftHead}>
-                    <Icon2 name='angle-left' size={30} color='black' onPress={() => navigation.goBack()}/>
-                </View>
-                <View style={styles.leftHead}>
-                    <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='bell-o' size={20} color='black'/></TouchableOpacity>
-                    <TouchableOpacity><Icon2 style={{ paddingHorizontal: 5 }} name='bars' size={20} color='black'/></TouchableOpacity>
-                </View>
-            </View> */}
 
             <View style={styles.troppin}>
                 <Text style={{fontSize: 24, paddingVertical: 20, color: 'white'}}>
@@ -47,19 +50,21 @@ export default function App({ navigation}) {
                             </TouchableOpacity>
 
                         </View>
-                        <View style={{ flexDirection: 'row', marginTop: 0 }}>
-                            <TouchableOpacity style={styles.fl}>
-                                <Image source={require('../assets/ProfileDetails/Container83.png')}/>
+                        <FlatList
+                            data={suggest}
+                            showsVerticalScrollIndicator={false}
+                            renderItem={({ item }) => (
+                            <TouchableOpacity style={{width: widthScreen/3, height: 180, padding: 10}} 
+                                onPress={() => navigation.navigate('ProfileDetails', { user: item, my: user })}>
+                                <Image style={{height: '100%', width: '100%', resizeMode: 'contain'}} 
+                                    source={{uri : item.avatar}}/>
+                                    <Text style={{fontSize: 18, fontWeight: 'bold', alignSelf: 'center', marginTop: 5}}>{item.username}</Text>
                             </TouchableOpacity>
-        
-                            <TouchableOpacity style={styles.fl}>
-                                <Image source={require('../assets/ProfileDetails/Container84.png')}/>
-                            </TouchableOpacity>
-        
-                            <TouchableOpacity style={styles.fl}>
-                                <Image source={require('../assets/ProfileDetails/Container85.png')}/>
-                            </TouchableOpacity>
-                        </View>
+                            )}
+                            keyExtractor={(item, index) => index.toString()}
+                            numColumns={3}
+                            contentContainerStyle={{ alignItems: 'flex-start', marginTop: 10, justifyContent: 'flex-start' }}
+                        />
 
         </View>
     );
@@ -94,10 +99,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
     }, troppin : {
-        flex: 1,
+        // flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         padding: 10, 
-        backgroundColor: 'black'
+        backgroundColor: 'black',
+        height: '60%'
     }
 });

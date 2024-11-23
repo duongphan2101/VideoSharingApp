@@ -12,7 +12,7 @@ const ImageViewScreen = ({navigation, route}) => {
     const [isCommentsVisible, setCommentsVisible] = useState(false);
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://192.168.1.141:3000/imageStreaming');
+            const response = await axios.get('http://192.168.1.140:3000/imageStreaming');
             if (Array.isArray(response.data) && response.data.length > 0) {
                 setImages(response.data);
             }
@@ -23,7 +23,7 @@ const ImageViewScreen = ({navigation, route}) => {
 
     const fetchComments = async (idPost) => {
         try {
-            const response = await axios.get(`http://192.168.1.141:3000/comment?id=${idPost}`);
+            const response = await axios.get(`http://192.168.1.140:3000/comment?id=${idPost}`);
             if (response.status === 200) {
                 setComments(response.data);
                 setCommentsVisible(true);

@@ -428,7 +428,6 @@ app.post('/insertComment', async (req, res) => {
 // Endpoint để tao account end user
 app.post('/register', async (req, res) => {
   const { username, sdt, email, accname, pass } = req.body;
-  const avatar = "https://imgur.com/a/QdlMMTF.png";
   if (!username || !sdt || !email || !accname || !pass) {
     return res.status(400).json({ error: 'Vui lòng cung cấp đầy đủ thông tin' });
   }
@@ -443,11 +442,11 @@ app.post('/register', async (req, res) => {
       .input('username', mssql.NVarChar, username)
       .input('sdt', mssql.NVarChar, sdt)
       .input('email', mssql.NVarChar, email + "@gmail.com")
-      .input('avatar', mssql.NVarChar, avatar)
+      .input('avatar', mssql.NVarChar, 'https://imgur.com/a/QdlMMTF.png')
       .query(`
         INSERT INTO Users (username, sdt, email, avatar, birthDay)
         OUTPUT inserted.idUser
-        VALUES (@username, @sdt, @email, @avatar, GETDATE())
+        VALUES (@username, @sdt, @email, 'https://imgur.com/a/QdlMMTF.png', GETDATE())
       `);
 
     const idUser = resultUser.recordset[0].idUser;
@@ -633,6 +632,62 @@ GROUP BY u.idUser, u.avatar, u.username ORDER BY latest_upload_at DESC;`
   }
 });
 
+app.get('/searchKeyWord', async (req, res) => {
+  const { keyword } = req.query;
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('keyword', mssql.NVarChar, `%${keyword}%`)
+      .query(`
+        SELECT * FROM Post p
+        INNER JOIN Users u ON p.idUser = u.idUser
+        WHERE (p.content LIKE @keyword OR u.username LIKE @keyword)
+        AND p.type = 'video'
+      `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching searchKeyword:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+
+app.get('/search', async (req, res) => {
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .query(`
+        select * from Post p 
+        inner join Users u on p.idUser = u.idUser
+        where p.type = 'video'
+      `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching search:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+app.get('/suggest', async (req, res) => {
+  const { id } = req.query;
+  try {
+    const pool = req.app.locals.db;
+    const result = await pool.request()
+      .input('id', mssql.Int, id)
+      .query(`
+        SELECT top 3 u.* FROM Users u WHERE u.idUser != @id
+        AND NOT EXISTS (
+            SELECT 1 
+            FROM Follow f
+            WHERE f.id_following = @id
+            AND f.id_followed = u.idUser
+        )`);
+    res.json(result.recordset);
+  } catch (err) {
+    console.log('Error fetching suggest:', err);
+    res.status(500).send('Server Error');
+  }
+});
 
 // Khởi chạy server
 app.listen(3000, () => {

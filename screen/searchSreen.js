@@ -1,32 +1,59 @@
-import { Dimensions, FlatList, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, Dimensions, FlatList, TextInput, TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/EvilIcons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const data = [
-    { id: '1', name : 'Laura', avatar: require('../assets/SearchVideo/Avatar13.png'), background: require('../assets/SearchVideo/Container40.png'),
-        caption: 'excuti clizser dog myzs vnsqer csavn cas utikcs'
-    },
-    { id: '2', name : 'Liz', avatar: require('../assets/SearchVideo/Avatar14.png'), background: require('../assets/SearchVideo/Container41.png'),
-        caption: 'excuti clizser dog myzs vnsqer csavn cas utikcs'
-    },
-    { id: '3', name : 'Cris', avatar: require('../assets/SearchVideo/Avatar15.png'), background: require('../assets/SearchVideo/Container43.png'),
-        caption: 'excuti clizser dog myzs vnsqer csavn cas utikcs'
-    },
-    { id: '4', name : 'Lina', avatar: require('../assets/SearchVideo/Avatar16.png'), background: require('../assets/SearchVideo/Container44.png'),
-        caption: 'excuti clizser dog myzs vnsqer csavn cas utikcs'
-    },
-]
 const widthScreen = Dimensions.get('window').width;
 export default function App({ navigation }) {
+    const [result, setResult] = useState([]);
+    const [keyword, setKeyword] = useState();
+    
+    const fetchData = async()=> {
+       try {
+           const response = await axios.get(`http://192.168.1.140:3000/search`);
+           setResult(response.data);
+       } catch (error) {
+           console.log("Lỗi khi search", error);
+           Alert.alert("Lỗi khi search ",error.message);
+       }
+    };
+
+    const fetchDataSearch = async (keyword) => {
+        try {
+            const response = await axios.get('http://192.168.1.140:3000/searchKeyWord', {
+                params: { keyword }
+            });
+            setResult(response.data);
+        } catch (error) {
+            console.log("Lỗi khi tìm kiếm", error);
+            Alert.alert("Lỗi khi tìm kiếm", error.message);
+        }
+    };
+
+    const handleSearch = (text) => {
+        setKeyword(text);
+        fetchDataSearch(text);
+    };
+   
+    useEffect(() => {
+       fetchData();
+   }, []);
+
     return (
         <View style={styles.container} showsVerticalScrollIndicator={false}>
 
             <View style={styles.head}>
-                <View style={styles.input}>
-                    <TextInput style={{flex: 1}} textContentType='seach' placeholder='search ...' value='Pet'/>
-                    <Icon name='close' color='black' size={20}/>
+            <View style={styles.input}>
+                    <TextInput
+                        style={{ flex: 1 }}
+                        textContentType='search'
+                        placeholder='search ...'
+                        value={keyword}
+                        onChangeText={handleSearch}
+                    />
+                    <Icon name='close' color='black' size={20} onPress={() => setKeyword('')} />
                 </View>
                 <TouchableOpacity style={{paddingHorizontal: 10}}><Icon name='navicon' color='black' size={30}/></TouchableOpacity>
             </View>
@@ -47,21 +74,23 @@ export default function App({ navigation }) {
             </View>
 
             <FlatList 
-                data={data}
+                data={result}
                 showsVerticalScrollIndicator={false}
                 renderItem={({item}) => (
-                    <TouchableOpacity style={{width: widthScreen/2, padding: 10}}>
-                        <Image source={item.background} style={{alignSelf: 'center'}}/>
-                        <Text style={{paddingVertical: 10}}>{item.caption}</Text>
+                    <TouchableOpacity style={{width: 200, height: 300, padding: 10, position: 'relative'}}
+                        onPress={()=> navigation.navigate('VideoDetails', {idPost: item.idPost, idUser: item.idUser, avatar: item.avatar})}>
+                        <Image source={{uri : 'https://pngmagic.com/product_images/black-background-for-youtube-thumbnail.jpg'}}
+                         style={{alignSelf: 'center', height: '75%', width: '100%', borderRadius: 15}}/>
+                        <Text style={{paddingVertical: 10, marginLeft: 10}}>{item.content}</Text>
                         <View style={{flexDirection: 'row', width: '100%', alignItems: 'center'}}>
-                            <Image source={item.avatar}/>
-                            <Text style={{paddingHorizontal: 10}}>{item.name}</Text>
+                            <Image style={{height: 30, width: 30, borderRadius: 50}} source={{uri:item.avatar}}/>
+                            <Text style={{paddingHorizontal: 10}}>{item.username}</Text>
                         </View>
                     </TouchableOpacity>
                 )}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item.idPost}
                 numColumns={2}
-                contentContainerStyle={{width: '100%', paddingHorizontal: 10, alignItems: 'center'}}
+                contentContainerStyle={{width: widthScreen, paddingHorizontal: 10, alignItems: 'flex-start'}}
             />
 
             <TouchableOpacity style={styles.showmore}>

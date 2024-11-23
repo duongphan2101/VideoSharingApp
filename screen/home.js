@@ -48,7 +48,7 @@ export default function App({ navigation, route }) {
 
     const fetchDataUser = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.141:3000/data?id=${user.idUser}`);
+        const response = await axios.get(`http://192.168.1.140:3000/data?id=${user.idUser}`);
         if (Array.isArray(response.data) && response.data.length > 0) {
           setUser(response.data);
         }
@@ -58,7 +58,7 @@ export default function App({ navigation, route }) {
     };
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.141:3000/imageStreaming4`);
+        const response = await axios.get(`http://192.168.1.140:3000/imageStreaming4`);
         if (Array.isArray(response.data) && response.data.length > 0) {
           setImages(response.data);
         }
@@ -69,7 +69,7 @@ export default function App({ navigation, route }) {
 
     const fetchStories = async () => {
       try {
-        const response = await axios.get('http://192.168.1.141:3000/Userstories');
+        const response = await axios.get('http://192.168.1.140:3000/Userstories');
         setStory(response.data);
       } catch (error) {
         console.error('Error fetching stories:', error);

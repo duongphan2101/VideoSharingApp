@@ -20,7 +20,7 @@ const MyVideos = ({id}) => {
     const navigation = useNavigation();
     const fetchData = async (id) => {
       try {
-        const response = await axios.get(`http://192.168.1.141:3000/profilevideos?id=${id}`);
+        const response = await axios.get(`http://192.168.1.140:3000/profilevideos?id=${id}`);
         if (Array.isArray(response.data) && response.data.length > 0) {
           setVideos(response.data);
         }
@@ -114,7 +114,7 @@ export default function App({ navigation, route }) {
     const [data, setData] = useState({});
     const fetchData = async (id) => {
         try {
-          const response = await axios.get(`http://192.168.1.141:3000/follow?id=${id}`);
+          const response = await axios.get(`http://192.168.1.140:3000/follow?id=${id}`);
           if (Array.isArray(response.data) && response.data.length > 0) {
             const followData = response.data[0];
             setData(followData);
@@ -135,7 +135,7 @@ export default function App({ navigation, route }) {
 
   const checkIsFollowing = async (idFollowing, idFollowed) => {
       try {
-          const response = await axios.get('http://192.168.1.141:3000/is-following', {
+          const response = await axios.get('http://192.168.1.140:3000/is-following', {
               params: {
                   id_following: idFollowing,
                   id_followed: idFollowed
@@ -157,7 +157,7 @@ export default function App({ navigation, route }) {
 
   const follow = async (idFollowing, idFollowed) => {
     try {
-        const response = await axios.post('http://192.168.1.141:3000/follow', {
+        const response = await axios.post('http://192.168.1.140:3000/follow', {
             idFollowing: idFollowing,
             idFollowed: idFollowed,
         });
@@ -173,7 +173,7 @@ export default function App({ navigation, route }) {
 };
 const unfollow = async (idFollowing, idFollowed) => {
     try {
-        const response = await axios.delete('http://192.168.1.141:3000/unfollow', {
+        const response = await axios.delete('http://192.168.1.140:3000/unfollow', {
             idFollowing: idFollowing,
             idFollowed: idFollowed,
         });

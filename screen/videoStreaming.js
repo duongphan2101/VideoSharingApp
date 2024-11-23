@@ -21,7 +21,7 @@ export default function VideoStreaming({ navigation, route }) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.141:3000/videoStreaming`);
+      const response = await axios.get(`http://192.168.1.140:3000/videoStreaming`);
       if (Array.isArray(response.data) && response.data.length > 0) {
         setVideos(response.data);
         setActivePostId(response.data[0].idPost);
@@ -30,7 +30,7 @@ export default function VideoStreaming({ navigation, route }) {
         // Check like status for all videos
         const likeStatuses = {};
         for (const video of response.data) {
-          const res = await axios.get('http://192.168.1.141:3000/is-like', {
+          const res = await axios.get('http://192.168.1.140:3000/is-like', {
             params: { idPost: video.idPost, idUser: user.idUser },
           });
           likeStatuses[video.idPost] = res.data.is_like;
@@ -81,8 +81,8 @@ export default function VideoStreaming({ navigation, route }) {
     try {
       const isCurrentlyLiked = likedPosts[idPost];
       const url = isCurrentlyLiked
-        ? `http://192.168.1.141:3000/unlike`
-        : `http://192.168.1.141:3000/like`;
+        ? `http://192.168.1.140:3000/unlike`
+        : `http://192.168.1.140:3000/like`;
   
       const response = await axios.post(url, {
         idUser: user.idUser,
@@ -127,7 +127,7 @@ export default function VideoStreaming({ navigation, route }) {
   const [isLike, setIsLike] = useState(false);
   const checkIsLike = async (idPost, idUser) => {
     try {
-      const response = await axios.get('http://192.168.1.141:3000/is-like', {
+      const response = await axios.get('http://192.168.1.140:3000/is-like', {
         params: { idPost, idUser },
       });
   
@@ -146,8 +146,8 @@ export default function VideoStreaming({ navigation, route }) {
   const updateCurrentVideoData = async (idPost) => {
     try {
       const [likeResponse, commentResponse] = await Promise.all([
-        axios.get(`http://192.168.1.141:3000/LikeCount?id=${idPost}`),
-        axios.get(`http://192.168.1.141:3000/commentCount?id=${idPost}`),
+        axios.get(`http://192.168.1.140:3000/LikeCount?id=${idPost}`),
+        axios.get(`http://192.168.1.140:3000/commentCount?id=${idPost}`),
       ]);
 
       setCurrentVideoData({
@@ -220,7 +220,7 @@ export default function VideoStreaming({ navigation, route }) {
 
   const fetchComments = async (idPost) => {
     try {
-      const response = await axios.get(`http://192.168.1.141:3000/comment?id=${idPost}`);
+      const response = await axios.get(`http://192.168.1.140:3000/comment?id=${idPost}`);
       if (response.status === 200) {
         setComments(response.data);
         setCommentsVisible(true);
@@ -235,7 +235,7 @@ export default function VideoStreaming({ navigation, route }) {
 
   const insertComment = async (idUser, idPost, text) => {
     try {
-      const response = await axios.post('http://192.168.1.141:3000/insertComment', {
+      const response = await axios.post('http://192.168.1.140:3000/insertComment', {
         idUser,
         idPost,
         text,

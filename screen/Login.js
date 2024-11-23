@@ -6,9 +6,10 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 
 export default function App({navigation}) {
   const [data, setData] = useState([]);
+  const [current_user, setCurrent_user] = useState([]);
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://192.168.1.141:3000/account');
+      const response = await axios.get('http://192.168.1.140:3000/account');
       setData(response.data);
       setUser("")
       setPass("")
@@ -27,7 +28,7 @@ export default function App({navigation}) {
   const handleLogin = () => {
     const checkAccount = data.find(item => item.account_user === user && item.pass === pass);
     if(checkAccount){
-      navigation.navigate('VideoSharingApp', {userData: checkAccount });
+        navigation.navigate('VideoSharingApp', { userData: checkAccount });
     }else{
       Alert.alert('Kiểm tra lại tài khoản và mật khẩu!');
     }
