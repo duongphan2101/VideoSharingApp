@@ -442,11 +442,10 @@ app.post('/register', async (req, res) => {
       .input('username', mssql.NVarChar, username)
       .input('sdt', mssql.NVarChar, sdt)
       .input('email', mssql.NVarChar, email + "@gmail.com")
-      .input('avatar', mssql.NVarChar, 'https://imgur.com/a/QdlMMTF.png')
       .query(`
         INSERT INTO Users (username, sdt, email, avatar, birthDay)
         OUTPUT inserted.idUser
-        VALUES (@username, @sdt, @email, 'https://imgur.com/a/QdlMMTF.png', GETDATE())
+        VALUES (@username, @sdt, @email, 'https://res-academy.cache.wpscdn.com/images/b1bc87981be4dc512c611e408ce6bbb2.png', GETDATE())
       `);
 
     const idUser = resultUser.recordset[0].idUser;
