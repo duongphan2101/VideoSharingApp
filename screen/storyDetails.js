@@ -21,7 +21,7 @@ export default function VideoStreaming({ navigation }) {
   // Fetch stories từ API
   const fetchStories = async () => {
     try {
-      const response = await axios.get('http://192.168.1.140:3000/stories');
+      const response = await axios.get('http://172.20.10.9:3000/stories');
       setStories(response.data);
     } catch (error) {
       console.error('Error fetching stories:', error);

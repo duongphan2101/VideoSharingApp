@@ -12,7 +12,7 @@ const Post_Video_Screen = ({ navigation, route }) => {
   
   const postMedia = async (idUser, type, url, navigation) => {
     try {
-      const response = await axios.post('http://192.168.1.140:3000/savePost', {
+      const response = await axios.post('http://172.20.10.9:3000/savePost', {
         idUser,
         type,
         url,

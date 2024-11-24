@@ -43,7 +43,7 @@ const EditProfile = ({ navigation, route }) => {
 
   const updatePost = async (idUser, username, avatar, sdt, email, birthDay) => {
     try {
-      const response = await axios.put('http://192.168.1.140:3000/updateProfile', {
+      const response = await axios.put('http://172.20.10.9:3000/updateProfile', {
         idUser,
         username,
         avatar,
@@ -169,8 +169,8 @@ const styles = StyleSheet.create({
   saveButton: {
     marginTop: 20,
     borderRadius: 10,
-    paddingVertical: 10,
-    backgroundColor: 'pink',
+    padding: 10,
+    backgroundColor: 'black',
     alignItems: 'center',
   },
   saveButtonText: {

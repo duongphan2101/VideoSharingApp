@@ -11,7 +11,7 @@ const config = {
   user: 'sa',
   password: '123',
   server: 'localhost',
-  database: 'db_videosharingapp',
+  database: 'my_db',
   options: {
     encrypt: true,
     trustServerCertificate: true,
@@ -445,7 +445,7 @@ app.post('/register', async (req, res) => {
       .query(`
         INSERT INTO Users (username, sdt, email, avatar, birthDay)
         OUTPUT inserted.idUser
-        VALUES (@username, @sdt, @email, 'https://res-academy.cache.wpscdn.com/images/b1bc87981be4dc512c611e408ce6bbb2.png', GETDATE())
+        VALUES (@username, @sdt, @email, 'https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg', GETDATE())
       `);
 
     const idUser = resultUser.recordset[0].idUser;

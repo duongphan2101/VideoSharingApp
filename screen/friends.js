@@ -4,6 +4,7 @@ import Icon2 from 'react-native-vector-icons/FontAwesome';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Foundation from '@expo/vector-icons/Foundation';
 const widthScreen = Dimensions.get('window').width;
 export default function App({ navigation, route}) {
     const user = route.params.userData;
@@ -12,7 +13,7 @@ export default function App({ navigation, route}) {
 
     const fetchData = async (id) => {
         try {
-          const response = await axios.get(`http://192.168.1.140:3000/suggest?id=${id}`);
+          const response = await axios.get(`http://172.20.10.9:3000/suggest?id=${id}`);
           if (Array.isArray(response.data) && response.data.length > 0) {
             setSuggest(response.data);
           }
@@ -31,12 +32,10 @@ export default function App({ navigation, route}) {
         <View style={[styles.container]}>
 
             <View style={styles.troppin}>
-                <Text style={{fontSize: 24, paddingVertical: 20, color: 'white'}}>
-                    Nothing
+                <Text style={{fontSize: 28, paddingVertical: 20, color: 'black'}}>
+                    Nothing <Foundation name="prohibited" size={28} color="black" />
                 </Text>
-                <Text style={{fontSize: 17 , color: 'white'}}>
-                    Follow your friends to see more content from them
-                </Text>
+                
             </View>
            
            <View style={[styles.suggest]}>
@@ -50,7 +49,7 @@ export default function App({ navigation, route}) {
                             </TouchableOpacity>
 
                         </View>
-                        <FlatList
+                        {/* <FlatList
                             data={suggest}
                             showsVerticalScrollIndicator={false}
                             renderItem={({ item }) => (
@@ -64,7 +63,26 @@ export default function App({ navigation, route}) {
                             keyExtractor={(item, index) => index.toString()}
                             numColumns={3}
                             contentContainerStyle={{ alignItems: 'flex-start', marginTop: 10, justifyContent: 'flex-start' }}
-                        />
+                        /> */}
+                        <View style={{ flexDirection: "row", marginTop: 0 }}>
+                <TouchableOpacity style={styles.fl}>
+                    <Image
+                        source={require("../assets/ProfileDetails/Container83.png")}
+                    />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.fl}>
+                    <Image
+                        source={require("../assets/ProfileDetails/Container84.png")}
+                    />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.fl}>
+                    <Image
+                        source={require("../assets/ProfileDetails/Container85.png")}
+                    />
+                </TouchableOpacity>
+            </View>
 
         </View>
     );
@@ -103,7 +121,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 10, 
-        backgroundColor: 'black',
-        height: '60%'
+        backgroundColor: 'white',
+        height: '70%'
     }
 });

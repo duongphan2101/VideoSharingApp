@@ -25,7 +25,8 @@ import ImageView from './screen/ImageView.js';
 import StoryDetails from './screen/storyDetails.js';
 import ImageStreaming from './screen/imageStreaming.js';
 import { TouchableOpacity } from 'react-native';
-
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -33,7 +34,7 @@ function TabNavigator({navigation, route}) {
   const { userData } = route.params;
   return (
     <Tab.Navigator initialRouteName='Home' screenOptions={{
-      tabBarActiveTintColor: 'pink',
+      tabBarActiveTintColor: 'red',
       tabBarInactiveTintColor: 'black',
     }}>
       <Tab.Screen
@@ -43,11 +44,11 @@ function TabNavigator({navigation, route}) {
         options={{
           header: () => (
             <View style={styles.headerContainer}>
-              <Text style={styles.headerTitle}>Video Sharing App</Text>
-              <Icon2 name="bell-o" size={25} color="black" />
+              <Text style={styles.headerTitle}>Home</Text>
+              <AntDesign name="bells" size={24} color="black" />
             </View>
           ),
-          tabBarIcon: ({ color }) => <Icon2 name="home" size={30} color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="home" size={28} color={color} />,
         }}
       />
       <Tab.Screen
@@ -56,7 +57,7 @@ function TabNavigator({navigation, route}) {
         component={SearchScreen}
         options={{
           headerShown: false,
-          tabBarIcon: ({ color }) => <Icon2 name="search" size={30} color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="search1" size={28} color={color}/>,
         }}
       />
       <Tab.Screen
@@ -65,7 +66,7 @@ function TabNavigator({navigation, route}) {
         component={plus}
         options={{
           headerShown: false,
-          tabBarIcon: ({ color }) => <Icon3 name="circle-with-plus" size={35} color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="pluscircleo" size={28} color={color}/>,
         }}
       />
       <Tab.Screen
@@ -73,8 +74,8 @@ function TabNavigator({navigation, route}) {
         initialParams={{ userData }}
         component={FriendsScreen}
         options={{
-          // headerShown: false,
-          tabBarIcon: ({ color }) => <Icon2 name="users" size={25} color={color} />,
+          headerShown: false,
+          tabBarIcon: ({ color }) => <Feather name="users" size={24} color={color} />,
         }}
       />
       <Tab.Screen
@@ -85,16 +86,20 @@ function TabNavigator({navigation, route}) {
           header: () => (
             <View style={styles.headerProflieContainer}>
                 <View style={{ flexDirection: 'row' }}>
-                    <Icon2 style={{ paddingHorizontal: 10 }} name="navicon" size={20} color="black" onPress={()=> navigation.navigate('Login')}/>
-                    <Icon2 style={{ paddingHorizontal: 10 }} name="user-plus" size={20} color="black" />
+                    {/* <Icon2 style={{ paddingHorizontal: 10 }} name="navicon" size={20} color="black" onPress={()=> navigation.navigate('Login')}/> */}
+                    {/* <Icon2 style={{ paddingHorizontal: 10 }} name="user-plus" size={20} color="black" /> */}
+                    <TouchableOpacity onPress={()=> navigation.navigate('Login')}>
+                      <Text style={{color: 'red'}}>Đăng Xuất</Text>
+                    </TouchableOpacity>
+                    {/* <AntDesign name="poweroff" size={20} color="black" onPress={()=> navigation.navigate('Login')}/> */}
                 </View>
                 <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={()=> navigation.navigate('EditProfile', {user: userData})}>
-                    <Icon2 style={{ color: 'pink', paddingHorizontal: 5 }} name="pencil" size={20} />
-                    <Text style={{ color: 'pink', paddingHorizontal: 5 }}>Edit Profile</Text>
+                    <Icon2 style={{ color: 'black', paddingHorizontal: 5 }} name="pencil" size={20} />
+                    <Text style={{ color: 'black', paddingHorizontal: 5 }}>Edit Profile</Text>
                 </TouchableOpacity>
             </View>
           ),
-          tabBarIcon: ({ color }) => <Icon2 name="user-circle-o" size={30} color={color} />,
+          tabBarIcon: ({ color }) =>  <AntDesign name="user" size={24} color={color} />,
         }}
       />
     </Tab.Navigator>
@@ -118,7 +123,7 @@ export default function App() {
               headerShown: false}}
           />
         <Stack.Screen 
-            name='VideoSharingApp' 
+            name='App' 
             component={TabNavigator}
             options={{
               headerShown: false}}

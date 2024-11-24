@@ -9,7 +9,7 @@ export default function App({navigation}) {
   const [data, setData] = useState([]);
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://192.168.1.140:3000/account');
+      const response = await axios.get('http://172.20.10.9:3000/account');
       setData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -35,7 +35,7 @@ export default function App({navigation}) {
   }
   const InsertUser = async () => {
     try {
-      const response = await axios.post('http://192.168.1.140:3000/register', {
+      const response = await axios.post('http://172.20.10.9:3000/register', {
         username: name,
         sdt, 
         email, 
@@ -56,29 +56,29 @@ export default function App({navigation}) {
   };
   
   return (
-    <ImageBackground source={require('../assets/bgL.png')} resizeMode='cover' style={styles.container}>
-      <View style={styles.overlay}>
+    <View style={styles.container}>
+      {/* <View style={styles.overlay}> */}
         <View style={styles.logo}>
-          <Text style={{color: 'pink', fontSize: 32, fontWeight: 'bold'}}>Nice to meet you!</Text>
+          <Text style={{color: 'black', fontSize: 32, fontWeight: 'bold'}}>Register</Text>
         </View>
         <View style={styles.viewInput}>
           <View style={[{width: '50%'},styles.input]}>
-            <Icon name='user' size={30} color={'pink'}/>
+            <Icon name='user' size={30} color={'black'}/>
             <TextInput 
               style={styles.textInput} 
               placeholder='Username' 
-              placeholderTextColor={'pink'} 
+              placeholderTextColor={'black'} 
               value={user} 
               onChangeText={setUser}
             />
           </View>
           <View style={[{width: '48%'},styles.input]}>
-            <Icon name='lock' size={30} color={'pink'}/>
+            <Icon name='lock' size={30} color={'black'}/>
             <TextInput 
               style={styles.textInput} 
               placeholder='Password' 
               secureTextEntry 
-              placeholderTextColor={'pink'} 
+              placeholderTextColor={'black'} 
               value={pass} 
               onChangeText={setPass}
             />
@@ -86,11 +86,11 @@ export default function App({navigation}) {
         </View>
         <View style={styles.viewInput}>
           <View style={[{width: '100%'},styles.input]}>
-            <AntDesign name="user" size={20} color="pink" />
+            <AntDesign name="user" size={20} color="black" />
             <TextInput 
               style={styles.textInput} 
               placeholder='Your name' 
-              placeholderTextColor={'pink'} 
+              placeholderTextColor={'black'} 
               value={name} 
               onChangeText={setName}
             />
@@ -100,18 +100,18 @@ export default function App({navigation}) {
 
         <View style={styles.viewInput}>
           <View style={[{width: '100%'},styles.input]}>
-            <Fontisto name="email" size={24} color="pink" />
+            <Fontisto name="email" size={24} color="black" />
             <TextInput 
               style={styles.textInput} 
               placeholder='Your email' 
-              placeholderTextColor={'pink'} 
+              placeholderTextColor={'black'} 
               value={email} 
               onChangeText={setEmail}
             />
             <TextInput 
               style={styles.textInput} 
               placeholder='Your email' 
-              placeholderTextColor={'pink'} 
+              placeholderTextColor={'black'} 
               value='@gmail.com' 
               editable={false}
             />
@@ -121,11 +121,11 @@ export default function App({navigation}) {
 
         <View style={styles.viewInput}>
           <View style={[{width: '100%'},styles.input]}>
-            <AntDesign name="phone" size={20} color="pink" />
+            <AntDesign name="phone" size={20} color="black" />
             <TextInput 
               style={styles.textInput} 
               placeholder='Your Phone' 
-              placeholderTextColor={'pink'} 
+              placeholderTextColor={'black'} 
               value={sdt} 
               onChangeText={setSdt}
             />
@@ -134,26 +134,27 @@ export default function App({navigation}) {
         </View>
 
           <TouchableOpacity style={styles.Touch} onPress={InsertUser}>
-            <Text style={{fontSize: 24, fontWeight: 'bold', color: 'white'}}>Register</Text>
+            <Text style={{fontSize: 24, fontWeight: 'bold', color: 'white'}}>Đăng Ký</Text>
           </TouchableOpacity>
 
-          <View style={styles.hr}/>
+          {/* <View style={styles.hr}/> */}
      
-          <TouchableOpacity style={{alignItems: 'flex-start', flexDirection: 'row', paddingHorizontal: 20, width: '100%'}} onPress={()=> navigation.navigate('Login')}>
-          <AntDesign name="arrowleft" size={16} color="white" style={{alignSelf: 'center', paddingHorizontal: 10}}/>
-            <Text style={{fontSize: 13, color: 'white'}}>Login</Text>
+          <TouchableOpacity style={{alignSelf: 'center', flexDirection: 'row', padding: 20, width: '100%'}} onPress={()=> navigation.navigate('Login')}>
+            <AntDesign name="arrowleft" size={16} color="black" style={{alignSelf: 'center', paddingHorizontal: 10}}/>
+            <Text style={{fontSize: 13, color: 'black'}}>Login</Text>
 
           </TouchableOpacity>
          
           {/* <Text style={{fontSize: 11, color: 'white', position: 'absolute', bottom: 10, alignSelf: 'center'}}>Cre: PN2D2101</Text> */}
-      </View>
-    </ImageBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center', 
+    alignItems: 'center', 
   },
   overlay: {
     flex: 1,
@@ -173,22 +174,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   input: {
-    borderColor: 'pink',
+    borderColor: 'black',
     borderWidth: .3,
     borderRadius: 15,
     padding: 10,
     flexDirection: 'row',
-    color: 'pink',
+    color: 'black',
   },
   textInput: {
     marginLeft: 10,
     flex: 1,
     paddingHorizontal: 10,
-    color: 'pink',
+    color: 'black',
   },
   Touch: {
     padding: 20,
-    backgroundColor: 'pink',
+    backgroundColor: 'black',
     alignItems: 'center',
     marginTop: 30,
     borderRadius: 15,
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
   hr: {
     width: '100%',
     height: 1,
-    backgroundColor: 'pink',
+    backgroundColor: 'black',
     marginVertical: 20,
   },
 });

@@ -1,14 +1,10 @@
 ﻿INSERT INTO Users (username, sdt, birthDay, avatar, email)
 VALUES 
-('Alice', '0901234567', '1995-08-15', 'https://imgur.com/RrBwvfA.png', 'alice@example.com'),
-('Bob', '0912345678', '1992-12-20', 'https://imgur.com/RrBwvfA.png', 'bob@example.com'),
-('Charlie', '0923456789', '1990-06-25', 'https://imgur.com/RrBwvfA.png', 'charlie@example.com');
+('Quang', '0901234567', '1995-08-15', 'https://imgur.com/RrBwvfA.png', 'Quang@example.com');
 
 INSERT INTO Account (idUser, username, pass)
 VALUES
-(1, 'Alice', '123'),
-(2, 'Bob', '123'),
-(3, 'Charlie', '123');
+(1, 'Quang', '123'),
 
 INSERT INTO Follow (id_following, id_followed)
 VALUES

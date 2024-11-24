@@ -12,7 +12,7 @@ export default function App({ navigation }) {
     
     const fetchData = async()=> {
        try {
-           const response = await axios.get(`http://192.168.1.140:3000/search`);
+           const response = await axios.get(`http://172.20.10.9:3000/search`);
            setResult(response.data);
        } catch (error) {
            console.log("Lỗi khi search", error);
@@ -22,7 +22,7 @@ export default function App({ navigation }) {
 
     const fetchDataSearch = async (keyword) => {
         try {
-            const response = await axios.get('http://192.168.1.140:3000/searchKeyWord', {
+            const response = await axios.get('http://172.20.10.9:3000/searchKeyWord', {
                 params: { keyword }
             });
             setResult(response.data);

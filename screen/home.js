@@ -5,6 +5,12 @@ import { useState, useEffect } from 'react';
 import { Video } from 'expo-av';
 import axios from 'axios';
 
+const dataStreaming = [
+  { id: '1', image: require('../assets/Home_Video_Listing/Container11.png'), marginLeft: -10 },
+  { id: '2', image: require('../assets/Home_Video_Listing/Container32.png'), marginLeft: 0 },
+  { id: '3', image: require('../assets/Home_Video_Listing/Container34.png'), marginLeft: 0 },
+];
+
 const dataTopTrending = [
   { id: '1', image: require('../assets/Home_Video_Listing/Container3.png'), marginLeft: -10 },
   { id: '2', image: require('../assets/Home_Video_Listing/Container15.png'), marginLeft: 0 },
@@ -44,21 +50,20 @@ export default function App({ navigation, route }) {
     const user  = route.params.userData;
     const [images, setImages] = useState([]);
     const [stories, setStory] = useState([]);
-    const [user1, setUser] = useState();
 
-    const fetchDataUser = async () => {
-      try {
-        const response = await axios.get(`http://192.168.1.140:3000/data?id=${user.idUser}`);
-        if (Array.isArray(response.data) && response.data.length > 0) {
-          setUser(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching video data:", error);
-      }
-    };
+    // const fetchDataUser = async () => {
+    //   try {
+    //     const response = await axios.get(`http://172.20.10.9:3000/data?id=${user.idUser}`);
+    //     if (Array.isArray(response.data) && response.data.length > 0) {
+    //       setUser(response.data);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching video data:", error);
+    //   }
+    // };
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.140:3000/imageStreaming4`);
+        const response = await axios.get(`http://172.20.10.9:3000/imageStreaming4`);
         if (Array.isArray(response.data) && response.data.length > 0) {
           setImages(response.data);
         }
@@ -69,7 +74,7 @@ export default function App({ navigation, route }) {
 
     const fetchStories = async () => {
       try {
-        const response = await axios.get('http://192.168.1.140:3000/Userstories');
+        const response = await axios.get('http://172.20.10.9:3000/Userstories');
         setStory(response.data);
       } catch (error) {
         console.error('Error fetching stories:', error);
@@ -78,7 +83,7 @@ export default function App({ navigation, route }) {
     };
 
     useEffect(() => {
-      fetchDataUser();
+      // fetchDataUser();
       fetchData();
       fetchStories();
 
@@ -120,6 +125,13 @@ const renderItem1 = ({ item }) => {
     </TouchableOpacity>
   );
 
+    // Hàm renderItem
+    const renderItem3= ({ item }) => (
+      <TouchableOpacity style={[styles.padTouch, { marginLeft: item.marginLeft }]} >
+        <Image source={item.image} />
+      </TouchableOpacity>
+    );
+
     // Hàm renderItem cho phần audio
     const renderItem2 = ({ item }) => (
       <TouchableOpacity style={{paddingHorizontal: 10}}>
@@ -130,11 +142,11 @@ const renderItem1 = ({ item }) => {
     );
 
       // Hàm renderAnh
-  const renderAnh = ({ item }) => (
-    <TouchableOpacity style={{padding: 10}} onPress={()=> {navigation.navigate('New Feed', {userData: user})}}>
-       <Image style={{height: 120, width: 100, borderRadius: 10, resizeMode: 'contain'}} source={{uri : item.url}}/>
-    </TouchableOpacity>
-  );
+  // const renderAnh = ({ item }) => (
+  //   <TouchableOpacity style={{padding: 10}} onPress={()=> {navigation.navigate('New Feed', {userData: user})}}>
+  //      <Image style={{height: 120, width: 100, borderRadius: 10, resizeMode: 'contain'}} source={{uri : item.url}}/>
+  //   </TouchableOpacity>
+  // );
   return (
     <ScrollView style={styles.container} vertical={true} showsVerticalScrollIndicator={false}>
 
@@ -209,15 +221,14 @@ const renderItem1 = ({ item }) => {
     {/* Streaming Section */}
     <SafeAreaView style={{ marginTop: 20, marginBottom: 20}}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Images</Text>
-        <TouchableOpacity onPress={()=> {navigation.navigate('New Feed', {userData: user1})}}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Streaming</Text>
+        <TouchableOpacity>
           <Image source={require('../assets/Home_Video_Listing/Button1.png')} />
         </TouchableOpacity>
       </View>
-
       <FlatList
-        data={images}
-        renderItem={renderAnh}
+        data={dataStreaming}
+        renderItem={renderItem3}
         keyExtractor={item => item.id}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
