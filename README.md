@@ -17,7 +17,7 @@ A cross-platform mobile video sharing app built with **React Native** and powere
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React Native (Expo or CLI)
+- **Frontend:** React Native (Expo)
 - **Backend:** Node.js, Express.js
 - **Database:** Microsoft SQL Server (MSSQL)
 - **Others:** REST API, MVC pattern, Git
